@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
 
   },
   headerContainer: {
-    height: screenHeight * 0.5, 
+    height: screenHeight * 0.6, 
     width: '100%',
     overflow: 'hidden',
     position: 'relative',
@@ -111,9 +111,9 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderLeftWidth: screenWidth, 
     borderLeftColor: 'transparent',
-    borderBottomWidth: 50, 
+    borderBottomWidth: 90, 
     borderBottomColor: '#222c2e', 
-    borderRightWidth: screenWidth * 0.7, 
+    borderRightWidth: screenWidth * 0.35, 
     borderRightColor: 'transparent',
   },
   formContainer: {
