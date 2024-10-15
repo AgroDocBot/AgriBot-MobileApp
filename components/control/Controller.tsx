@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, Alert, Pressable } from 'react-native';
+import { Dimensions } from 'react-native';
+import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 
 export default function RobotControl() {
   const [photo, setPhoto] = useState(null);
   const [message, setMessage] = useState('No data');
+  const [isAuto, setAuto] = useState(false);
 
   const takePhoto = async () => {
     try {
@@ -33,145 +36,196 @@ export default function RobotControl() {
       const data = await response.text();
       console.log(data);
     } catch (error) {
-      console.error('Error stopping:', error);
+      console.error('Stopping:', error);
     }
   };
 
+  const turnOnAuto = async () => {
+    try {
+        const response = await fetch(`http://192.168.4.1/move/auto`, { method: 'POST' }); //API for autonomous movement
+        const data = await response.text();
+        console.log(data);
+      } catch (error) {
+        console.error('Auto turned on:', error);
+      }
+  } 
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Robot Control</Text>
 
-      <View style={styles.photoBox}>
-        {photo ? (
-          <Image source={{ uri: photo }} style={styles.image} />
-        ) : (
-          <Text>No Image</Text>
-        )}
+      <View style={styles.displayBox}>
+        <View style={styles.photoBox}>
+          {photo ? (
+            <Image source={{ uri: photo }} style={styles.image} />
+          ) : (
+            <Text>No Image</Text>
+          )}
+        </View>
+        <View style={styles.textBox}>
+          <Text>{message}</Text>
+        </View>
       </View>
 
-      <View style={styles.textBox}>
-        <Text>{message}</Text>
-      </View>
-
-      <TouchableOpacity style={styles.button} onPress={takePhoto}>
-        <Text style={styles.buttonText}>Take Photo</Text>
+      <TouchableOpacity style={styles.takePhotoButton} onPress={takePhoto}>
+        <TabBarIcon name={'camera'} color={"white"} />
       </TouchableOpacity>
 
-      <View style={styles.controlContainer}>
-        <View style={styles.emptySpace} />
+      <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.controlButton}
-          onPressIn={() => sendControlRequest('forward')}
-          onPressOut={stopMovement}
-        >
-          <Text style={styles.controlText}>↑</Text>
-        </TouchableOpacity>
-        <View style={styles.emptySpace} />
+          style={[styles.controlButton, styles.emptyButton]}
+        ></TouchableOpacity>
 
         <TouchableOpacity
           style={styles.controlButton}
-          onPressIn={() => sendControlRequest('left')}
-          onPressOut={stopMovement}
+          onPress={() => sendControlRequest('forward')}
         >
-          <Text style={styles.controlText}>←</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.controlButton}
-          onPressIn={stopMovement}
-        >
-          <Text style={styles.controlText}>■</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.controlButton}
-          onPressIn={() => sendControlRequest('right')}
-          onPressOut={stopMovement}
-        >
-          <Text style={styles.controlText}>→</Text>
+          <Text style={styles.buttonText}>↑</Text>
         </TouchableOpacity>
 
-        <View style={styles.emptySpace} />
+        <TouchableOpacity
+          style={[styles.controlButton, styles.emptyButton]}
+        ></TouchableOpacity>
+
         <TouchableOpacity
           style={styles.controlButton}
-          onPressIn={() => sendControlRequest('backward')}
-          onPressOut={stopMovement}
+          onPress={() => sendControlRequest('left')}
         >
-          <Text style={styles.controlText}>↓</Text>
+          <Text style={styles.buttonText}>←</Text>
         </TouchableOpacity>
-        <View style={styles.emptySpace} />
+
+        <TouchableOpacity
+          style={styles.controlButton}
+          onPress={() => stopMovement()}
+        >
+          <Text style={styles.buttonText}>■</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.controlButton}
+          onPress={() => sendControlRequest('right')}
+        >
+          <Text style={styles.buttonText}>→</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.controlButton, styles.emptyButton]}
+        ></TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.controlButton}
+          onPress={() => sendControlRequest('backward')}
+        >
+          <Text style={styles.buttonText}>↓</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.auto_controlButton}
+          onPress={() => turnOnAuto()}
+        >
+          <Text style={styles.buttonText}>Auto</Text>
+        </TouchableOpacity>
+
       </View>
     </View>
   );
 }
 
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
+  auto_btn : {
+    height : 60,
+    backgroundColor : "#5cb85c",
+    borderRadius : 5,
+    width : '100%',
+    display : 'flex',
+    justifyContent : 'center',
+    alignItems : 'center'
+  }, 
   container: {
-    flex: 1,
-    backgroundColor: '#f4f4f4',
+    display : 'flex',
+    backgroundColor : '#222c2e',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
     padding: 20,
   },
-  title: {
+  header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginTop: 20,
+  },
+  displayBox: {
+    alignItems: 'center',
+    width: '100%',
   },
   photoBox: {
-    width: '80%',
-    maxHeight: 250,
-    backgroundColor: '#f0f0f0',
+    width: '100%',
+    height: 300,
+    backgroundColor: '#e0e0e0',
     borderColor: '#ccc',
     borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
+    borderRadius: 5,
   },
   image: {
     width: '100%',
     height: '100%',
   },
   textBox: {
-    width: '80%',
-    padding: 10,
-    backgroundColor: '#f0f0f0',
+    width: '100%',
+    height: 50,
+    backgroundColor: '#e0e0e0',
     borderColor: '#ccc',
     borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 20,
-    alignItems: 'center',
+    borderRadius: 5,
   },
-  button: {
-    backgroundColor: '#333',
-    padding: 15,
-    width: '80%',
-    alignItems: 'center',
+  takePhotoButton: {
+    paddingVertical: 15,
+    paddingHorizontal: 40,
     borderRadius: 5,
     marginBottom: 20,
-  },
+    position : 'absolute',
+    top : 20,
+    left : 20,
+    backgroundColor : "#5cb85c",
+ },
   buttonText: {
-    color: 'white',
+    color: '#fff',
     fontSize: 18,
+    textAlign: 'center',
+    userSelect : 'none'
   },
-  controlContainer: {
-    width: '80%',
-    maxWidth: 300,
+  buttonContainer: {
+    width: '100%',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop : screenHeight * 0.016
   },
   controlButton: {
-    width: '30%',
-    padding: 20,
-    backgroundColor: '#333',
+    width: 85,
+    height: 85,
+    justifyContent: 'center',
     alignItems: 'center',
+    margin: 10,
     borderRadius: 5,
-    margin: 5,
+    backgroundColor : "#5cb85c",
   },
-  controlText: {
-    color: 'white',
-    fontSize: 18,
+  auto_controlButton: {
+    width: 85,
+    height: 85,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10,
+    borderRadius: 5,
+    backgroundColor : "#9FA6B2",
   },
-  emptySpace: {
-    width: '30%',
+  emptyButton: {
+    backgroundColor: 'transparent',
   },
 });

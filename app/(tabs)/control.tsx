@@ -6,12 +6,32 @@ import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useState } from 'react';
+import { ConnectScreen } from '@/components/control/ConnectToDevice';
+import RobotControl from '@/components/control/Controller';
+import { Dimensions } from 'react-native';
 
 export default function TabControl() {
+
+  const [isConnectedToBot, setConnectedToBot] = useState(true);
+
+  function setSetConnectedToBot() {
+    setConnectedToBot(true);
+  }
+
+  
   return (
-    <ThemedView></ThemedView>
+    <ThemedView style={styles.main}>
+      {!isConnectedToBot ? 
+        <ConnectScreen setConnectedState={setSetConnectedToBot}/>
+        :
+        <RobotControl/>
+      }
+    </ThemedView>
   );
 }
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   headerImage: {
@@ -24,4 +44,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
   },
+  main : {
+    backgroundColor : '#222c2e',
+    height : screenHeight *0.95
+  }
 });

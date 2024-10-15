@@ -4,20 +4,48 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
-import { Text } from 'react-native-reanimated/lib/typescript/Animated';
+import { Text } from 'react-native'; 
 import { Dimensions } from 'react-native';
+import RequestWifiPermission from '@/permissions/WifiPermission';
+import WifiManager from "react-native-wifi-reborn";
+import { ConnectToProtectedSSIDParams } from 'react-native-wifi-reborn';
 
-export function ConnectScreen({ children, title }: PropsWithChildren & { title: string }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const theme = useColorScheme() ?? 'light';
+interface ConnectScreenProps {
+  setConnectedState : Function
+}
+
+export function ConnectScreen({setConnectedState} : ConnectScreenProps) {
+  
+  const theme = useColorScheme() ?? 'dark';
+
+  async function connectToBot() {
+
+    const wifiConfig : ConnectToProtectedSSIDParams = {
+      ssid: 'AgriBot',
+      password: 'ilovemaven',
+      isWEP: true, 
+    };
+
+    await RequestWifiPermission().then(() => {
+      WifiManager.connectToProtectedWifiSSID(wifiConfig).then(
+        () => {
+          console.log("Connected successfully!");
+        },
+        () => {
+          console.log("Connection failed!");
+        }
+      );
+    }).then(() => setConnectedState());
+  }
 
   return (
-    <ThemedView>
-      <ThemedView>
+    <ThemedView style={styles.main}>
+      <ThemedView style={styles.container}>
+      <Text style={styles.connect_text}>Oops, it seems you are not connected!</Text>
         <Pressable style={styles.connect_btn}>
-          <TabBarIcon name={'wifi'} color={"white"} />     
+          <TabBarIcon name={'wifi'} color={"white"} size={60}/>     
         </Pressable>
-        <Text>Connect</Text>
+        <Text style={styles.connect_text}>Connect</Text>
       </ThemedView>
     </ThemedView>
   );
@@ -49,9 +77,22 @@ const styles = StyleSheet.create({
     display : 'flex',
     flexDirection : 'column',
     justifyContent : 'center',
-    alignItems : 'center'
+    alignItems : 'center',
+    backgroundColor : '#222c2e',
+    width : screenWidth * 0.65,
+    gap : 30
   },
   main : {
-    
+    backgroundColor : '#222c2e',
+    width : screenWidth,
+    height : screenHeight,
+    flexDirection : 'column',
+    justifyContent : 'center',
+    alignItems : 'center'
+  },
+  connect_text : {
+    color : 'white',
+    textAlign : 'center',
+    fontSize : 24
   }
 });

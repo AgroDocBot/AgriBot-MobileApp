@@ -20,8 +20,8 @@ export default async function RequestImageRWPermission() {
     );
     
     if (granted ===  PermissionsAndroid.RESULTS.GRANTED) {
-        await AsyncStorage.setItem('wifiPermission', 'true');
+        await AsyncStorage.setItem('imagePermission', 'true');
     } else {
-        await AsyncStorage.setItem('wifiPermission', 'false');
+        await AsyncStorage.setItem('imagePermission', 'false');
     }
 }
