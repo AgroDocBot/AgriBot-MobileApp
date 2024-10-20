@@ -13,7 +13,7 @@ import { Dimensions } from 'react-native';
 
 export default function TabControl() {
 
-  const [isConnectedToBot, setConnectedToBot] = useState(true);
+  const [isConnectedToBot, setConnectedToBot] = useState(false);
 
   function setSetConnectedToBot() {
     setConnectedToBot(true);

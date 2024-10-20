@@ -2,41 +2,46 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity, Alert, Pressable } from 'react-native';
 import { Dimensions } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
+import { useEffect } from 'react';
 
 export default function RobotControl() {
   const [photo, setPhoto] = useState(null);
   const [message, setMessage] = useState('No data');
   const [isAuto, setAuto] = useState(false);
-
-  const takePhoto = async () => {
-    try {
-      const response = await fetch('http://192.168.4.1/shoot/show');  //192.168.4.1:3000 -> ExpressJS server on the RP5
-      const data = await response.json();
-      setPhoto(data.photo); 
-      setMessage(data.string);
-    } catch (error) {
-      console.error('Error taking photo:', error);
-      Alert.alert('Error', 'Failed to take photo');
-    }
-  };
-
-  const sendControlRequest = async (direction : string) => {
-    try {
-      const response = await fetch(`http://192.168.4.18/move/${direction}`, { method: 'POST' }); //192.168.4.18:8080 -> MicroPython server on the ESP32-C3 
-      const data = await response.text();
-      console.log(data);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  const stopMovement = async () => {
-    try {
-      const response = await fetch(`http://192.168.4.18/stop`, { method: 'POST' });
-      const data = await response.text();
-      console.log(data);
-    } catch (error) {
-      console.error('Stopping:', error);
+  const [ws, setWs] = useState<WebSocket>();
+  
+  useEffect(() => {
+    const socket = new WebSocket('ws://192.168.4.18/ws'); //connects to MicroDot server on the ESP32-C3 with WebSockets
+    socket.onopen = () => {
+      console.log('Connected to movement control module');
+    };
+    
+    socket.onmessage = (e) => {
+      console.log('Message from server:', e.data);
+    };
+    
+    socket.onerror = (e) => {
+      console.error('WebSocket error:', e.timeStamp);
+    };
+    
+    socket.onclose = (e) => {
+      console.log('WebSocket closed:', e.code, e.reason);
+    };
+    
+    setWs(socket);
+    
+    return () => {
+      socket.close();
+    };
+  }, []);
+  
+  const sendControlRequest = (direction : string) => {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      const message = { action: direction };
+      ws.send(JSON.stringify(message));
+      console.log(`Sent: ${JSON.stringify(message)}`);
+    } else {
+      console.log('WebSocket is not open');
     }
   };
 
@@ -45,10 +50,26 @@ export default function RobotControl() {
         const response = await fetch(`http://192.168.4.1/move/auto`, { method: 'POST' }); //API for autonomous movement
         const data = await response.text();
         console.log(data);
-      } catch (error) {
-        console.error('Auto turned on:', error);
-      }
+        setAuto(true);
+    } catch (error) {
+      console.error('Auto not turned on due to: ', error);
+    }
   } 
+
+
+  const takePhoto = async () => {
+    try {
+      const response = await fetch('http://192.168.4.1/shoot/show');  // ExpressJS server on the Raspberry Pi
+      const data = await response.json();
+      setPhoto(data.photo); 
+      const assess = await fetch('http://192.168.4.18/shoot/assess');
+      const assessData = await assess.json();
+      setMessage(assessData.assess);
+    } catch (error) {
+      console.error('Error taking photo:', error);
+      Alert.alert('Error', 'Failed to take photo');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -56,7 +77,7 @@ export default function RobotControl() {
       <View style={styles.displayBox}>
         <View style={styles.photoBox}>
           {photo ? (
-            <Image source={{ uri: photo }} style={styles.image} />
+            <Image source={{ uri: photo }} style={styles.image}/>
           ) : (
             <Text>No Image</Text>
           )}
@@ -72,37 +93,49 @@ export default function RobotControl() {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={[styles.controlButton, styles.emptyButton]}
-        ></TouchableOpacity>
+          style={!isAuto ? styles.controlButton : styles.auto_controlButton}
+          onPressIn={() => sendControlRequest('go_left_wide')}
+          onPressOut={() => sendControlRequest('stop')}
+        >
+          <Text style={styles.buttonText}>↰</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.controlButton}
-          onPress={() => sendControlRequest('forward')}
+          style={!isAuto ? styles.controlButton : styles.auto_controlButton}
+          onPress={() => sendControlRequest('go_forward')}
+          onPressOut={() => sendControlRequest('stop')}
         >
           <Text style={styles.buttonText}>↑</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.controlButton, styles.emptyButton]}
-        ></TouchableOpacity>
+          style={!isAuto ? styles.controlButton : styles.auto_controlButton}
+          onPress={() => sendControlRequest('go_right_wide')}
+          onPressOut={() => sendControlRequest('stop')}
+        >
+          <Text style={styles.buttonText}>↱</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.controlButton}
-          onPress={() => sendControlRequest('left')}
+          style={!isAuto ? styles.controlButton : styles.auto_controlButton}
+          onPress={() => sendControlRequest('go_left')}
+          onPressOut={() => sendControlRequest('stop')}
         >
           <Text style={styles.buttonText}>←</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.controlButton}
-          onPress={() => stopMovement()}
+          style={!isAuto ? styles.controlButton : styles.auto_controlButton}
+          onPress={() => sendControlRequest('stop')}
+          onPressOut={() => sendControlRequest('stop')}
         >
           <Text style={styles.buttonText}>■</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.controlButton}
-          onPress={() => sendControlRequest('right')}
+          style={!isAuto ? styles.controlButton : styles.auto_controlButton}
+          onPress={() => sendControlRequest('go_right')}
+          onPressOut={() => sendControlRequest('stop')}
         >
           <Text style={styles.buttonText}>→</Text>
         </TouchableOpacity>
@@ -112,8 +145,9 @@ export default function RobotControl() {
         ></TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.controlButton}
-          onPress={() => sendControlRequest('backward')}
+          style={!isAuto ? styles.controlButton : styles.auto_controlButton}
+          onPress={() => sendControlRequest('go_backward')}
+          onPressOut={() => sendControlRequest('stop')}
         >
           <Text style={styles.buttonText}>↓</Text>
         </TouchableOpacity>
