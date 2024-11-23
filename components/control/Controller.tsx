@@ -5,71 +5,121 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useEffect } from 'react';
 
 export default function RobotControl() {
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState<any>('');
   const [message, setMessage] = useState('No data');
   const [isAuto, setAuto] = useState(false);
-  const [ws, setWs] = useState<WebSocket>();
+  const [esp32Ws, setEsp32Ws] = useState<WebSocket>();
+  const [rp5Ws, setRp5Ws] = useState<WebSocket>();
   
   useEffect(() => {
-    const socket = new WebSocket('ws://192.168.4.18/ws'); //connects to MicroDot server on the ESP32-C3 with WebSockets
-    socket.onopen = () => {
+    //connects to MicroDot server on the ESP32-C3 with WebSockets
+    const esp32Socket = new WebSocket('ws://192.168.4.18:81/ws'); 
+    esp32Socket.onopen = () => {
       console.log('Connected to movement control module');
     };
     
-    socket.onmessage = (e) => {
+    esp32Socket.onmessage = (e) => {
       console.log('Message from server:', e.data);
     };
     
-    socket.onerror = (e) => {
+    esp32Socket.onerror = (e) => {
       console.error('WebSocket error:', e.timeStamp);
     };
     
-    socket.onclose = (e) => {
+    esp32Socket.onclose = (e) => {
       console.log('WebSocket closed:', e.code, e.reason);
     };
     
-    setWs(socket);
+    setEsp32Ws(esp32Socket);
     
+    //connects to ExpressJS server on the RP5 with WebSockets
+    const rp5Socket = new WebSocket('ws://192.168.4.1:3003')
+    rp5Socket.onopen = () => {
+      console.log('Connected to main logic module')
+    }; 
+
+    rp5Socket.onmessage = (ev) => {
+      if (ev.data instanceof Blob) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64data = reader.result; 
+          setPhoto(base64data); 
+        };
+        reader.readAsDataURL(ev.data); // Convert Blob to base64
+      } else {
+        const classMsg = ev.data;
+        let result = JSON.stringify(classMsg);
+        let s = result.indexOf("Predicted Class:");
+        let e = result.indexOf("Prediction Probabilities:");
+
+        let resClass = result.substring(s + 16, e -3);
+        setMessage(resClass);
+      }
+    };
+
+    rp5Socket.onerror = (e) => {
+      console.error('RP5 WebSocket error:', e.timeStamp);
+    };
+
+    rp5Socket.onclose = (e) => {
+      console.log('RP5 WebSocket closed:', e.code, e.reason);
+    };
+
+    setRp5Ws(rp5Socket);
+
     return () => {
-      socket.close();
+      esp32Socket.close();
+      rp5Socket.close();
     };
   }, []);
   
   const sendControlRequest = (direction : string) => {
-    if (ws && ws.readyState === WebSocket.OPEN) {
+    if (esp32Ws && esp32Ws.readyState === WebSocket.OPEN) {
       const message = { action: direction };
-      ws.send(JSON.stringify(message));
+      esp32Ws.send(JSON.stringify(message));
       console.log(`Sent: ${JSON.stringify(message)}`);
     } else {
       console.log('WebSocket is not open');
     }
   };
 
-  const turnOnAuto = async () => {
-    try {
-        const response = await fetch(`http://192.168.4.1/move/auto`, { method: 'POST' }); //API for autonomous movement
-        const data = await response.text();
-        console.log(data);
-        setAuto(true);
-    } catch (error) {
-      console.error('Auto not turned on due to: ', error);
-    }
-  } 
-
-
-  const takePhoto = async () => {
-    try {
-      const response = await fetch('http://192.168.4.1/shoot/show');  // ExpressJS server on the Raspberry Pi
-      const data = await response.json();
-      setPhoto(data.photo); 
-      const assess = await fetch('http://192.168.4.18/shoot/assess');
-      const assessData = await assess.json();
-      setMessage(assessData.assess);
-    } catch (error) {
-      console.error('Error taking photo:', error);
-      Alert.alert('Error', 'Failed to take photo');
+  const turnOnAuto = () => {
+    if (rp5Ws && rp5Ws.readyState === WebSocket.OPEN) {
+      const message = { action: 'auto_on' };
+      setAuto(isAuto!);
+      esp32Ws!.close();
+      rp5Ws.send(JSON.stringify(message));
+      console.log('Auto mode activated via RP5 WebSocket');
+    } else {
+      console.log('RP5 WebSocket is not open');
     }
   };
+
+
+  const takePhoto = () => {
+    if (rp5Ws && rp5Ws.readyState === WebSocket.OPEN) {
+      const messageTake = { action: 'shoot_assess' }; // WebSocket command to take a photo
+      rp5Ws.send(JSON.stringify(messageTake));
+      console.log('Requested assessment')
+      const messageGet = {action : 'shoot_show'};
+      rp5Ws.send(JSON.stringify(messageGet));    
+      console.log('Requested photo via RP5 WebSocket');
+    } else {
+      console.log('RP5 WebSocket is not open');
+      Alert.alert('Error', 'RP5 WebSocket is not open');
+    }
+  };
+
+  const sendCameraRequest = (direction : string) => {
+    if (rp5Ws && rp5Ws.readyState === WebSocket.OPEN) {
+      const messageTake = { action: direction };
+      rp5Ws.send(JSON.stringify(messageTake));
+      console.log('Requested camera movement');
+    } else {
+      console.log('RP5 WebSocket is not open');
+      Alert.alert('Error', 'RP5 WebSocket is not open');
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -87,8 +137,41 @@ export default function RobotControl() {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.takePhotoButton} onPress={takePhoto}>
+      <TouchableOpacity
+       style={styles.takePhotoButton} onPress={takePhoto}>
         <TabBarIcon name={'camera'} color={"white"} />
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.cameraControlLeft}
+        onPressIn={() => sendCameraRequest('turn_left')}
+        onPressOut={() => sendControlRequest('stop')}
+      >
+        <Text style={styles.buttonText}>←</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+       style={styles.cameraControlRight}
+       onPressIn={() => sendCameraRequest('turn_right')}
+       onPressOut={() => sendControlRequest('stop')}
+      >
+        <Text style={styles.buttonText}>→</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+       style={styles.cameraControlUp}
+       onPressIn={() => sendCameraRequest('level_higher')}
+       onPressOut={() => sendControlRequest('stop')}
+      >
+        <Text style={styles.buttonText}>↑</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.cameraControlDown}
+        onPressIn={() => sendCameraRequest('level_lower')}
+        onPressOut={() => sendControlRequest('stop')}
+      >
+        <Text style={styles.buttonText}>↓</Text>
       </TouchableOpacity>
 
       <View style={styles.buttonContainer}>
@@ -261,5 +344,50 @@ const styles = StyleSheet.create({
   },
   emptyButton: {
     backgroundColor: 'transparent',
+  },
+
+  cameraControlLeft: {
+    position: 'absolute',
+    top: 290,
+    left: 20,
+    width: screenWidth * 0.45,
+    height: 30,
+    backgroundColor: '#5cb85c',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomLeftRadius : 5
+  },
+  cameraControlRight: {
+    position: 'absolute',
+    top : 290,
+    right: 20,
+    width: screenWidth * 0.45,
+    height: 30,
+    backgroundColor: '#5cb85c',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomRightRadius : 5
+  },
+  cameraControlUp: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    width: 30,
+    height: screenHeight * 0.175,
+    backgroundColor: '#5cb85c',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderTopRightRadius : 5
+  },
+  cameraControlDown: {
+    position: 'absolute',
+    top: 20 + screenHeight * 0.175,
+    right: 20,
+    width: 30,
+    height: screenHeight * 0.175,
+    backgroundColor: '#5cb85c',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomRightRadius : 5
   },
 });
