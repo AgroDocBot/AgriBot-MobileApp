@@ -1,29 +1,43 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform } from 'react-native';
-
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import React, { useState } from 'react';
+import { View, StyleSheet, Dimensions, Text, TextInput, ScrollView } from 'react-native';
+import Menu from '@/components/data/Menu';
+import CardList from '@/components/data/CardList';
 
 export default function DataScreen() {
-  return (
-    <ThemedView>
+  const [activeTab, setActiveTab] = useState('fields');
+  const [searchQuery, setSearchQuery] = useState('');
 
-    </ThemedView>
+  return (
+    <View style={styles.main}>
+      <Menu activeTab={activeTab} setActiveTab={setActiveTab} />
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Search..."
+        placeholderTextColor="#ccc"
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
+      <ScrollView>
+        <CardList activeTab={activeTab} searchQuery={searchQuery} />
+      </ScrollView>
+    </View>
   );
 }
 
+const { height: screenHeight } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  main: {
+    backgroundColor: '#222c2e',
+    height: screenHeight * 0.95,
+    padding: 10,
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  searchBar: {
+    height: 40,
+    backgroundColor: '#333',
+    color: '#fff',
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    marginVertical: 10,
   },
 });

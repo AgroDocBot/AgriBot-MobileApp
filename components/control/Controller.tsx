@@ -121,6 +121,15 @@ export default function RobotControl() {
     }
   }
 
+  const getGPSData = () => {
+    if (rp5Ws && rp5Ws.readyState === WebSocket.OPEN) {
+      const messageTake = { action: "gps" };
+      rp5Ws.send(JSON.stringify(messageTake));
+      console.log('Requested gps data');
+    } else {
+      console.log('RP5 WebSocket is not open');
+    }
+  }
   return (
     <View style={styles.container}>
 
@@ -145,7 +154,7 @@ export default function RobotControl() {
       <TouchableOpacity 
         style={styles.cameraControlLeft}
         onPressIn={() => sendCameraRequest('turn_left')}
-        onPressOut={() => sendControlRequest('stop')}
+        onPressOut={() => sendCameraRequest('stop_rotate')}
       >
         <Text style={styles.buttonText}>←</Text>
       </TouchableOpacity>
@@ -153,7 +162,7 @@ export default function RobotControl() {
       <TouchableOpacity
        style={styles.cameraControlRight}
        onPressIn={() => sendCameraRequest('turn_right')}
-       onPressOut={() => sendControlRequest('stop')}
+       onPressOut={() => sendCameraRequest('stop_rotate')}
       >
         <Text style={styles.buttonText}>→</Text>
       </TouchableOpacity>
@@ -161,7 +170,7 @@ export default function RobotControl() {
       <TouchableOpacity
        style={styles.cameraControlUp}
        onPressIn={() => sendCameraRequest('level_higher')}
-       onPressOut={() => sendControlRequest('stop')}
+       onPressOut={() => sendCameraRequest('stop_level')}
       >
         <Text style={styles.buttonText}>↑</Text>
       </TouchableOpacity>
@@ -169,7 +178,7 @@ export default function RobotControl() {
       <TouchableOpacity 
         style={styles.cameraControlDown}
         onPressIn={() => sendCameraRequest('level_lower')}
-        onPressOut={() => sendControlRequest('stop')}
+        onPressOut={() => sendCameraRequest('stop_level')}
       >
         <Text style={styles.buttonText}>↓</Text>
       </TouchableOpacity>
@@ -224,8 +233,11 @@ export default function RobotControl() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.controlButton, styles.emptyButton]}
-        ></TouchableOpacity>
+          style={styles.auto_controlButton}
+          onPress={() => getGPSData()}
+        >
+          <Text style={styles.buttonText}>GPS</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
           style={!isAuto ? styles.controlButton : styles.auto_controlButton}
@@ -361,7 +373,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top : 290,
     right: 20,
-    width: screenWidth * 0.45,
+    width: screenWidth * 0.46,
     height: 30,
     backgroundColor: '#5cb85c',
     justifyContent: 'center',
@@ -373,7 +385,7 @@ const styles = StyleSheet.create({
     top: 20,
     right: 20,
     width: 30,
-    height: screenHeight * 0.175,
+    height: 150,
     backgroundColor: '#5cb85c',
     justifyContent: 'center',
     alignItems: 'center',
@@ -381,10 +393,10 @@ const styles = StyleSheet.create({
   },
   cameraControlDown: {
     position: 'absolute',
-    top: 20 + screenHeight * 0.175,
+    top: 20 + 150,
     right: 20,
     width: 30,
-    height: screenHeight * 0.175,
+    height: 150,
     backgroundColor: '#5cb85c',
     justifyContent: 'center',
     alignItems: 'center',

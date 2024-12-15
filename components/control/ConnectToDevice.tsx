@@ -42,7 +42,7 @@ export function ConnectScreen({setConnectedState} : ConnectScreenProps) {
     <ThemedView style={styles.main}>
       <ThemedView style={styles.container}>
       <Text style={styles.connect_text}>Oops, it seems you are not connected!</Text>
-        <Pressable style={styles.connect_btn}>
+        <Pressable style={styles.connect_btn} onPress={connectToBot}>
           <TabBarIcon name={'wifi'} color={"white"} size={60}/>     
         </Pressable>
         <Text style={styles.connect_text}>Connect</Text>
