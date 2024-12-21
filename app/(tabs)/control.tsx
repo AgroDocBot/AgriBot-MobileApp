@@ -25,7 +25,7 @@ export default function TabControl() {
       {!isConnectedToBot ? 
         <ConnectScreen setConnectedState={setSetConnectedToBot}/>
         :
-        <RobotControl/>
+        <RobotControl key={isConnectedToBot ? "connected" : "disconnected"} isConnected={isConnectedToBot} />
       }
     </ThemedView>
   );

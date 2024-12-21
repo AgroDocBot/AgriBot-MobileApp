@@ -3,8 +3,9 @@ import { StyleSheet, View, Text, Image, TouchableOpacity, Alert, Pressable } fro
 import { Dimensions } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useEffect } from 'react';
+import { NetworkInfo } from 'react-native-network-info';
 
-export default function RobotControl() {
+export default function RobotControl({ isConnected }: { isConnected: boolean }) {
   const [photo, setPhoto] = useState<any>('');
   const [message, setMessage] = useState('No data');
   const [isAuto, setAuto] = useState(false);
@@ -13,65 +14,75 @@ export default function RobotControl() {
   
   useEffect(() => {
     //connects to MicroDot server on the ESP32-C3 with WebSockets
-    const esp32Socket = new WebSocket('ws://192.168.4.18:81/ws'); 
-    esp32Socket.onopen = () => {
-      console.log('Connected to movement control module');
-    };
-    
-    esp32Socket.onmessage = (e) => {
-      console.log('Message from server:', e.data);
-    };
-    
-    esp32Socket.onerror = (e) => {
-      console.error('WebSocket error:', e.timeStamp);
-    };
-    
-    esp32Socket.onclose = (e) => {
-      console.log('WebSocket closed:', e.code, e.reason);
-    };
-    
-    setEsp32Ws(esp32Socket);
-    
-    //connects to ExpressJS server on the RP5 with WebSockets
-    const rp5Socket = new WebSocket('ws://192.168.4.1:3003')
-    rp5Socket.onopen = () => {
-      console.log('Connected to main logic module')
-    }; 
 
-    rp5Socket.onmessage = (ev) => {
-      if (ev.data instanceof Blob) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64data = reader.result; 
-          setPhoto(base64data); 
+    const connectWebSockets = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      Alert.alert('Success', 'Connection successful!');
+      const currentSSID = await NetworkInfo.getSSID();
+      if (currentSSID === 'AgriBot') {
+        const esp32Socket = new WebSocket('ws://192.168.4.18:81/ws'); 
+        esp32Socket.onopen = () => {
+          console.log('Connected to movement control module');
         };
-        reader.readAsDataURL(ev.data); // Convert Blob to base64
-      } else {
-        const classMsg = ev.data;
-        let result = JSON.stringify(classMsg);
-        let s = result.indexOf("Predicted Class:");
-        let e = result.indexOf("Prediction Probabilities:");
+        
+        esp32Socket.onmessage = (e) => {
+          console.log('Message from server:', e.data);
+        };
+        
+        esp32Socket.onerror = (e) => {
+          console.error('WebSocket error:', e.timeStamp);
+        };
+        
+        esp32Socket.onclose = (e) => {
+          console.log('WebSocket closed:', e.code, e.reason);
+        };
+        
+        setEsp32Ws(esp32Socket);
+        
+        //connects to ExpressJS server on the RP5 with WebSockets
+        const rp5Socket = new WebSocket('ws://192.168.4.1:3003')
+        rp5Socket.onopen = () => {
+          console.log('Connected to main logic module')
+        }; 
 
-        let resClass = result.substring(s + 16, e -3);
-        setMessage(resClass);
+        rp5Socket.onmessage = (ev) => {
+          if (ev.data instanceof Blob) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const base64data = reader.result; 
+              setPhoto(base64data); 
+            };
+            reader.readAsDataURL(ev.data); // Convert Blob to base64
+          } else {
+            const classMsg = ev.data;
+            let result = JSON.stringify(classMsg);
+            let s = result.indexOf("Predicted Class:");
+            let e = result.indexOf("Prediction Probabilities:");
+
+            let resClass = result.substring(s + 16, e -3);
+            setMessage(resClass);
+          }
+        };
+
+        rp5Socket.onerror = (e) => {
+          console.error('RP5 WebSocket error:', e.timeStamp);
+        };
+
+        rp5Socket.onclose = (e) => {
+          console.log('RP5 WebSocket closed:', e.code, e.reason);
+        };
+
+        setRp5Ws(rp5Socket);
       }
-    };
+    }
 
-    rp5Socket.onerror = (e) => {
-      console.error('RP5 WebSocket error:', e.timeStamp);
-    };
-
-    rp5Socket.onclose = (e) => {
-      console.log('RP5 WebSocket closed:', e.code, e.reason);
-    };
-
-    setRp5Ws(rp5Socket);
+    connectWebSockets();
 
     return () => {
-      esp32Socket.close();
-      rp5Socket.close();
+        esp32Ws?.close();
+        rp5Ws?.close();
     };
-  }, []);
+  }, [isConnected]);
   
   const sendControlRequest = (direction : string) => {
     if (esp32Ws && esp32Ws.readyState === WebSocket.OPEN) {
