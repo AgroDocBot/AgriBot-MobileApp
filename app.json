@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ivaylokartev.AgriBotAppv.v02"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,7 +27,19 @@
         "INTERNET",
         "ACCESS_WIFI_STATE",
         "ACCESS_NETWORK_STATE"
-      ]
+      ],
+      "networkSecurityConfig": {
+        "domain-config": [
+          {
+            "domain": "192.168.4.18",
+            "cleartextTrafficPermitted": true
+          },
+          {
+            "domain": "192.168.4.1",
+            "cleartextTrafficPermitted": true
+          }
+        ]
+      }
     },
     "web": {
       "bundler": "metro",
@@ -35,11 +48,26 @@
     },
     "plugins": [
       "expo-router",
-      ["expo-build-properties", {
-        "android": {
-          "usesCleartextTraffic": true
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true,
+            "networkSecurityConfig": {
+              "domain-config": [
+                {
+                  "domain": "192.168.4.18",
+                  "cleartextTrafficPermitted": true
+                },
+                {
+                  "domain": "192.168.4.1",
+                  "cleartextTrafficPermitted": true
+                }
+              ]
+            }
+          }
         }
-      }]
+      ]
     ],
     "experiments": {
       "typedRoutes": true
