@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   main: {
     backgroundColor: '#222c2e',
     height: screenHeight * 0.95,
-    padding: 10,
+    padding: 20,
   },
   searchBar: {
     height: 40,

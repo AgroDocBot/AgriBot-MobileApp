@@ -11,15 +11,34 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
   const [isAuto, setAuto] = useState(false);
   const [esp32Ws, setEsp32Ws] = useState<WebSocket>();
   const [rp5Ws, setRp5Ws] = useState<WebSocket>();
+  const [isPolling, setPolling] = useState<boolean>(true);
   
   useEffect(() => {
-    //connects to MicroDot server on the ESP32-C3 with WebSockets
 
     const connectWebSockets = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      let connectedSSID : string | null = '';
+      let attempts = 0;
+
+      while (attempts < 10) { // Max 10 attempts to confirm network stability
+        connectedSSID = await NetworkInfo.getSSID();
+        if (connectedSSID === 'AgriBot') {
+          console.log('Connected to AgriBot network.');
+          break;
+        }
+        attempts++;
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+
+      if (connectedSSID !== 'AgriBot') {
+        Alert.alert('Error', 'Failed to connect to the AgriBot network.');
+        return;
+      }
+
+      //await new Promise((resolve) => setTimeout(resolve, 1000));
       Alert.alert('Success', 'Connection successful!');
-      const currentSSID = await NetworkInfo.getSSID();
-      if (currentSSID === 'AgriBot') {
+      //const currentSSID = await NetworkInfo.getSSID();
+      if (connectedSSID === 'AgriBot' || connectedSSID === '') {   //just for test
         const esp32Socket = new WebSocket('ws://192.168.4.18:81/ws'); 
         esp32Socket.onopen = () => {
           console.log('Connected to movement control module');
@@ -205,7 +224,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
 
         <TouchableOpacity
           style={!isAuto ? styles.controlButton : styles.auto_controlButton}
-          onPress={() => sendControlRequest('go_forward')}
+          onPressIn={() => sendControlRequest('go_forward')}
           onPressOut={() => sendControlRequest('stop')}
         >
           <Text style={styles.buttonText}>↑</Text>
@@ -213,7 +232,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
 
         <TouchableOpacity
           style={!isAuto ? styles.controlButton : styles.auto_controlButton}
-          onPress={() => sendControlRequest('go_right_wide')}
+          onPressIn={() => sendControlRequest('go_right_wide')}
           onPressOut={() => sendControlRequest('stop')}
         >
           <Text style={styles.buttonText}>↱</Text>
@@ -221,7 +240,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
 
         <TouchableOpacity
           style={!isAuto ? styles.controlButton : styles.auto_controlButton}
-          onPress={() => sendControlRequest('go_left')}
+          onPressIn={() => sendControlRequest('go_left')}
           onPressOut={() => sendControlRequest('stop')}
         >
           <Text style={styles.buttonText}>←</Text>
@@ -229,7 +248,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
 
         <TouchableOpacity
           style={!isAuto ? styles.controlButton : styles.auto_controlButton}
-          onPress={() => sendControlRequest('stop')}
+          onPressIn={() => sendControlRequest('stop')}
           onPressOut={() => sendControlRequest('stop')}
         >
           <Text style={styles.buttonText}>■</Text>
@@ -237,7 +256,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
 
         <TouchableOpacity
           style={!isAuto ? styles.controlButton : styles.auto_controlButton}
-          onPress={() => sendControlRequest('go_right')}
+          onPressIn={() => sendControlRequest('go_right')}
           onPressOut={() => sendControlRequest('stop')}
         >
           <Text style={styles.buttonText}>→</Text>
@@ -252,7 +271,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
 
         <TouchableOpacity
           style={!isAuto ? styles.controlButton : styles.auto_controlButton}
-          onPress={() => sendControlRequest('go_backward')}
+          onPressIn={() => sendControlRequest('go_backward')}
           onPressOut={() => sendControlRequest('stop')}
         >
           <Text style={styles.buttonText}>↓</Text>

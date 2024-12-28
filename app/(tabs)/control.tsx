@@ -13,7 +13,7 @@ import { Dimensions } from 'react-native';
 
 export default function TabControl() {
 
-  const [isConnectedToBot, setConnectedToBot] = useState(false);
+  const [isConnectedToBot, setConnectedToBot] = useState(true);
 
   function setSetConnectedToBot() { 
     setConnectedToBot(true);
@@ -46,6 +46,6 @@ const styles = StyleSheet.create({
   },
   main : {
     backgroundColor : '#222c2e',
-    height : screenHeight *0.95
+    height : screenHeight *0.95,
   }
 });
