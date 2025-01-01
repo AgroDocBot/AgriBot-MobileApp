@@ -2,8 +2,14 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Card from './Card';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import AddFieldPopup from './AddFieldPopUp';
+import { useState } from 'react';
+import authSlice from '@/redux/authSlice';
 
 export default function CardList({ activeTab, searchQuery, onAdd }: any) {
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+
   const data: any = {
     fields: [
       { name: 'Field A', size: '10ha', crops: 'Wheat', location: 'Zone 1' },
@@ -17,6 +23,26 @@ export default function CardList({ activeTab, searchQuery, onAdd }: any) {
       { name: 'Blight', plant: 'Wheat', encountered: true },
       { name: 'Rust', plant: 'Corn', encountered: false },
     ],
+  };
+
+
+  const handleAdd = (fieldData: any) => {
+    fetch('http://localhost:3000/fields/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        fieldname: fieldData.fieldName,
+        crop: fieldData.crop,
+        latitude: fieldData.location.latitude,
+        longitude: fieldData.location.longitude,
+        userId: 1, 
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log('Field added:', data))
+      .catch((error) => console.error('Error:', error));
   };
 
   const filteredData = data[activeTab].filter((item: any) =>
@@ -44,10 +70,20 @@ export default function CardList({ activeTab, searchQuery, onAdd }: any) {
       {activeTab !== 'diseases' && (
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => onAdd(activeTab)}>
+          onPress={() => {setPopupVisible(true)}}>
           <Ionicons name="add-outline" size={32} color="#fff" />
         </TouchableOpacity>
       )}
+      {activeTab === 'fields' && (
+        <>
+          <AddFieldPopup
+            visible={isPopupVisible}
+            onClose={() => setPopupVisible(false)}
+            onSubmit={handleAdd}
+          />
+        </>
+      )}
+
     </View>
   );
 }
