@@ -3,13 +3,22 @@ import { Animated, ImageBackground, StyleSheet, TextInput, View, Text, Button, D
 import { BlurView } from 'expo-blur';
 import { ThemedView } from '@/components/ThemedView';
 import { AnimatedBlurViewMethods } from 'react-native-animated-blur-view';
+import { useState } from 'react';
+import { Alert } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { setAuthState } from '@/redux/authSlice';
 
 export default function HomeScreen() {
+
+  const [isSignup, setIsSignup] = useState(false); 
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const dispatch = useDispatch();
 
   const slideAnimHeader = useRef(new Animated.Value(-500)).current;
   const slideAnimForm = useRef(new Animated.Value(500)).current;
   const blurAnim = useRef(new Animated.Value(0)).current;
-  const blurViewRef = useRef<AnimatedBlurViewMethods>();
 
   useEffect(() => {
     Animated.timing(slideAnimHeader, {
@@ -21,18 +30,51 @@ export default function HomeScreen() {
     Animated.timing(slideAnimForm, {
       toValue: 0,
       duration: 750,
-      delay: 0,
       useNativeDriver: true,
     }).start();
 
     Animated.timing(blurAnim, {
       toValue: 100,
-      duration: 2000, // Slow blur animation
+      duration: 2000,
       easing: Easing.linear,
       useNativeDriver: false,
     }).start();
-    
   }, []);
+
+  const handleSubmit = async () => {
+    const url = isSignup
+      ? 'http://localhost:3000/auth/register'
+      : 'http://localhost:3000/auth/login';
+
+    const body = isSignup
+      ? { username, email, password }
+      : { username, password };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        if (isSignup) {
+          Alert.alert('Success', 'Account created successfully!');
+          setIsSignup(false);
+        } else {
+          Alert.alert('Success', 'Logged in successfully!');
+          console.log('Token:', data.accessToken);
+          dispatch(setAuthState({ token: data.accessToken, user: data.user }));
+        }
+      } else {
+        Alert.alert('Error', data.message || 'Something went wrong.');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Unable to connect to the server.');
+    }
+  };
 
   return (
     <ThemedView style={styles.container}>
@@ -52,9 +94,38 @@ export default function HomeScreen() {
       </View>
 
       <Animated.View style={[styles.formContainer, { transform: [{ translateX: slideAnimForm }] }]}>
-        <TextInput style={styles.input} placeholder="Username" placeholderTextColor="#888" />
-        <TextInput style={styles.input} placeholder="Password" placeholderTextColor="#888" secureTextEntry />
-        <Pressable style={styles.login_btn} onPress={() => {}} ><Text style={styles.btn_text}>Login</Text></Pressable>
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          placeholderTextColor="#888"
+          value={username}
+          onChangeText={setUsername}
+        />
+        {isSignup && (
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor="#888"
+            value={email}
+            onChangeText={setEmail}
+          />
+        )}
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#888"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+        <Pressable style={styles.login_btn} onPress={handleSubmit}>
+          <Text style={styles.btn_text}>{isSignup ? 'Sign Up' : 'Login'}</Text>
+        </Pressable>
+        <Pressable onPress={() => setIsSignup(!isSignup)}>
+          <Text style={styles.switchText}>
+            {isSignup ? 'Already have an account? Log In' : "No account? Sign Up"}
+          </Text>
+        </Pressable>
       </Animated.View>
     </ThemedView>
   );
@@ -144,5 +215,11 @@ const styles = StyleSheet.create({
     textAlign : 'center',
     color : 'white',
     fontSize : 20
-  }
+  },
+    switchText: {
+    textAlign: 'center',
+    color: '#5cb85c',
+    marginTop: 20,
+    fontSize: 16,
+  },
 });

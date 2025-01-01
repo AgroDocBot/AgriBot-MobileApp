@@ -9,6 +9,8 @@ import { Dimensions } from 'react-native';
 import RequestWifiPermission from '@/permissions/WifiPermission';
 import WifiManager from "react-native-wifi-reborn";
 import { ConnectToProtectedSSIDParams } from 'react-native-wifi-reborn';
+import { NativeModules } from 'react-native';
+import { Alert } from 'react-native';
 
 interface ConnectScreenProps {
   setConnectedState : Function
@@ -17,6 +19,8 @@ interface ConnectScreenProps {
 export function ConnectScreen({setConnectedState} : ConnectScreenProps) {
   
   const theme = useColorScheme() ?? 'dark';
+
+  const { NetworkManager } = NativeModules;
 
   async function connectToBot() {
 
@@ -35,7 +39,12 @@ export function ConnectScreen({setConnectedState} : ConnectScreenProps) {
           console.log("Connection failed!");
         }
       );
-    }).then(() => setConnectedState());
+
+    }).then(() => setConnectedState()).then( async () => {
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      NetworkManager.testPackage()
+      NetworkManager.bindToMobileData();
+    });
   }
 
   return (
