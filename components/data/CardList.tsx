@@ -1,32 +1,55 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Card from './Card';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AddFieldPopup from './AddFieldPopUp';
-import { useState } from 'react';
-import authSlice from '@/redux/authSlice';
+import { useSelector } from 'react-redux';
 
-export default function CardList({ activeTab, searchQuery, onAdd }: any) {
-
+export default function CardList({ activeTab, searchQuery }: any) {
   const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupMode, setPopupMode] = useState<'add' | 'edit'>('add');
+  const [fields, setFields] = useState<any[]>([]);
+  const [measurements, setMeasurements] = useState<any[]>([]);
+  const [diseases, setDiseases] = useState<any[]>([]);
+  const [editData, setEditData] = useState<any>(null);
 
-  const data: any = {
-    fields: [
-      { name: 'Field A', size: '10ha', crops: 'Wheat', location: 'Zone 1' },
-      { name: 'Field B', size: '8ha', crops: 'Corn', location: 'Zone 2' },
-    ],
-    measurements: [
-      { field: 'Field A', date: '2024-12-01', duration: '2h', percent: '75%' },
-      { field: 'Field B', date: '2024-12-03', duration: '1.5h', percent: '60%' },
-    ],
-    diseases: [
-      { name: 'Blight', plant: 'Wheat', encountered: true },
-      { name: 'Rust', plant: 'Corn', encountered: false },
-    ],
-  };
+  const userId = useSelector((state: any) => state.auth.user?.id);
+  const user = useSelector((state: any) => state.auth.user);
+  const username = useSelector((state: any) => state.auth.user?.username);
 
+  useEffect(() => {
+    if (userId) {
+      fetch(`http://localhost:3000/fields/getfields/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => setFields(data))
+        .catch((error) => console.error('Error fetching fields:', error));
+    }
+
+    if (username) {
+      fetch(`http://localhost:3000/measurements/read/${username}`, {
+        method: 'GET',
+      })
+        .then((response) => response.json())
+        .then((data) => setMeasurements(data))
+        .catch((error) => console.error('Error fetching measurements:', error));
+    }
+
+    fetch(`http://localhost:3000/diseases/all`, { method: 'GET' })
+      .then((response) => response.json())
+      .then((data) => setDiseases(data))
+      .catch((error) => console.error('Error fetching diseases:', error));
+  }, [userId, username, fields]);
 
   const handleAdd = (fieldData: any) => {
+    console.log("Current user: "+user.username);
+    console.log("Current User ID: " + user.id);
+    const curId = user.id;
+    console.log("Added id: "+curId);
     fetch('http://localhost:3000/fields/create', {
       method: 'POST',
       headers: {
@@ -37,19 +60,68 @@ export default function CardList({ activeTab, searchQuery, onAdd }: any) {
         crop: fieldData.crop,
         latitude: fieldData.location.latitude,
         longitude: fieldData.location.longitude,
-        userId: 1, 
+        userId: curId,
       }),
     })
       .then((response) => response.json())
-      .then((data) => console.log('Field added:', data))
-      .catch((error) => console.error('Error:', error));
+      .then((data) => {
+        setFields((prev) => [...prev, data]);
+        setPopupVisible(false);
+      })
+      .catch((error) => console.error('Error adding field:', error));
   };
 
-  const filteredData = data[activeTab].filter((item: any) =>
-    Object.values(item).some((value: any) =>
-      value.toString().toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
+  const handleEdit = (fieldData: any) => {
+    fetch(`http://localhost:3000/fields/edit`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        fieldname: fieldData.fieldName,
+        crop: fieldData.crop,
+        latitude: fieldData.location.latitude,
+        longitude: fieldData.location.longitude,
+        userId: user.id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setFields((prev) =>
+          prev.map((field) =>
+            field.fieldname === fieldData.fieldName ? data : field
+          )
+        );
+        setPopupVisible(false);
+      })
+      .catch((error) => console.error('Error editing field:', error));
+  };
+
+  const handleDelete = (fieldData: any) => {
+    fetch(`http://localhost:3000/fields/delete`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        fieldname: fieldData.fieldname,
+        userId: user.id,
+      }),
+    })
+      .then(() => {
+        setFields((prev) =>
+          prev.filter((field) => field.fieldname !== fieldData.fieldname)
+        );
+      })
+      .catch((error) => console.error('Error deleting field:', error));
+  };
+
+  const filteredData =
+    activeTab === 'fields'
+      ? fields
+      : activeTab === 'measurements'
+      ? measurements
+      : diseases;
 
   return (
     <View>
@@ -59,31 +131,50 @@ export default function CardList({ activeTab, searchQuery, onAdd }: any) {
             key={index}
             data={item}
             activeTab={activeTab}
-            onEdit={(data: any) => console.log('Edit:', data)}
-            onRemove={(data: any) => console.log('Remove:', data)}
+            onEdit={(data: any) => {
+              setEditData(data);
+              setPopupMode('edit');
+              setPopupVisible(true);
+            }}
+            onRemove={handleDelete}
           />
         ))
       ) : (
         <Text style={styles.noResults}>No results found</Text>
       )}
 
-      {activeTab !== 'diseases' && (
+      {activeTab === 'fields' && (
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => {setPopupVisible(true)}}>
+          onPress={() => {
+            setPopupMode('add');
+            setEditData(null);
+            setPopupVisible(true);
+          }}>
           <Ionicons name="add-outline" size={32} color="#fff" />
         </TouchableOpacity>
       )}
-      {activeTab === 'fields' && (
-        <>
-          <AddFieldPopup
-            visible={isPopupVisible}
-            onClose={() => setPopupVisible(false)}
-            onSubmit={handleAdd}
-          />
-        </>
+
+      {activeTab === 'measurements' && (
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => {
+            setPopupMode('add');
+            setEditData(null);
+            setPopupVisible(true);
+          }}>
+          <Ionicons name="add-outline" size={32} color="#fff" />
+        </TouchableOpacity>
       )}
 
+      {activeTab === 'fields' && (
+        <AddFieldPopup
+          visible={isPopupVisible}
+          onClose={() => setPopupVisible(false)}
+          onSubmit={popupMode === 'add' ? handleAdd : handleEdit}
+          initialValues={editData}
+        />
+      )}
     </View>
   );
 }
@@ -98,3 +189,4 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
 });
+

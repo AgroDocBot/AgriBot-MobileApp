@@ -45,7 +45,8 @@
     "react-native-wifi-reborn": "^4.13.0",
     "react-redux": "^9.2.0",
     "redux": "^5.0.1",
-    "victory-native": "^37.3.5"
+    "victory-native": "^37.3.5",
+    "expo-navigation-bar": "~3.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

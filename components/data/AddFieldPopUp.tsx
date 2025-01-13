@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
-export default function AddFieldPopup({ visible, onClose, onSubmit }: any) {
+export default function AddFieldPopup({ visible, onClose, onSubmit, initialValues }: any) {
   if (!visible) return null;
 
-  const [fieldName, setFieldName] = useState('');
-  const [crop, setCrop] = useState('');
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
+  const [fieldName, setFieldName] = useState(initialValues?.fieldname || '');
+  const [crop, setCrop] = useState(initialValues?.crop || '');
+  const [latitude, setLatitude] = useState(initialValues?.latitude?.toString() || '');
+  const [longitude, setLongitude] = useState(initialValues?.longitude?.toString() || '');
 
   const handleSubmit = () => {
     const parsedLatitude = parseFloat(latitude);

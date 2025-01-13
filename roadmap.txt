@@ -1,0 +1,30 @@
+v0.1 - Robot movement control
+v0.2 - Camera movement control and fixed bugs with Control tab in general;
+general structure of the mobile app defined
+v0.3 - Finished strucure of Account tab, GPS support
+v0.4 - Mobile data usage and WiFi enabled, staged integration with backend
+infractructure (locally)
+v0.5 - State management redesign and improvement, fixing Google-related
+problems
+v0.6 - Integration with backend (production)
+v0.7 - Redesign, implementation of different interfaces for control
+(keypad, wheel)
+v0.8 - Adjustments to fit new hardware-related requirements
+
+v1.0 (Baseline Update) - Fully functioning app with baseline features
+v1.1 - Auto mode movement control fixed
+v1.2 - Implementing system for handling data streams from the robot in auto
+mode
+v1.3, v1.4, v1.5 - fixing issues from the newly introduced auto 
+assessment mode
+v1.6 - Adjustments to fit new hardware-related requirements
+
+v2.0 (Auto mode Update) - Auto mode fully implemented
+v2.1 - Implementation of interface for enabling one of the two communication
+channels - WiFi and 433MHz Radio
+v2.2 - Adjusting to hardware requirements
+
+v3.0 (Antennas Update) - Implemented support for long-range communication with 433MHz radio
+antennas
+
+v4.0 (Design adjustments Update)

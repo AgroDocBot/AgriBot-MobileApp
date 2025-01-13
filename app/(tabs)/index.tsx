@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { setAuthState } from '@/redux/authSlice';
+import { useSelector } from 'react-redux';
 
 export default function HomeScreen() {
 
@@ -19,6 +20,8 @@ export default function HomeScreen() {
   const slideAnimHeader = useRef(new Animated.Value(-500)).current;
   const slideAnimForm = useRef(new Animated.Value(500)).current;
   const blurAnim = useRef(new Animated.Value(0)).current;
+
+  const user = useSelector((state: any) => state.auth.user);
 
   useEffect(() => {
     Animated.timing(slideAnimHeader, {
@@ -66,6 +69,7 @@ export default function HomeScreen() {
           Alert.alert('Success', 'Logged in successfully!');
           console.log('Token:', data.accessToken);
           dispatch(setAuthState({ token: data.accessToken, user: data.user }));
+          console.log("User: "+user);
         }
       } else {
         Alert.alert('Error', data.message || 'Something went wrong.');

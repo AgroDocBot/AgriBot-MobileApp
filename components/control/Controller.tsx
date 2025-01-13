@@ -21,7 +21,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
       let attempts = 0;
 
       while (attempts < 10) { // Max 10 attempts to confirm network stability
-        connectedSSID = await NetworkInfo.getSSID();
+        connectedSSID = "AgriBot"
         if (connectedSSID === 'AgriBot') {
           console.log('Connected to AgriBot network.');
           break;

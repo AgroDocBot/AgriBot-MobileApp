@@ -10,12 +10,12 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
       case 'fields':
         return (
           <>
-            <Text style={styles.cardTitle}>{data.name}</Text>
+            <Text style={styles.cardTitle}>{data.fieldname}</Text>
             <Text style={styles.cardText}>
-              <Ionicons name="leaf-outline" size={16} color="#fff" /> Crops: {data.crops}
+              <Ionicons name="leaf-outline" size={16} color="#fff" /> Crops: {data.crop}
             </Text>
             <Text style={styles.cardText}>
-              <Ionicons name="location-outline" size={16} color="#fff" /> Location: {data.location}
+              <Ionicons name="location-outline" size={16} color="#fff" /> Location: {data.longitude}
             </Text>
           </>
         );
