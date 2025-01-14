@@ -4,6 +4,7 @@ import Card from './Card';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AddFieldPopup from './AddFieldPopUp';
 import { useSelector } from 'react-redux';
+import AddMeasurementPopup from './AddMeasurementPopUp';
 
 export default function CardList({ activeTab, searchQuery }: any) {
   const [isPopupVisible, setPopupVisible] = useState(false);
@@ -43,6 +44,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
       .then((response) => response.json())
       .then((data) => setDiseases(data))
       .catch((error) => console.error('Error fetching diseases:', error));
+    //console.log(diseases)
   }, [userId, username, fields]);
 
   const handleAdd = (fieldData: any) => {
@@ -116,6 +118,58 @@ export default function CardList({ activeTab, searchQuery }: any) {
       .catch((error) => console.error('Error deleting field:', error));
   };
 
+  const handleAddMeasurement = (measurementData: any) => {
+    fetch('http://localhost:3000/measurements/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ...measurementData, userId }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setMeasurements((prev) => [...prev, data]);
+        setPopupVisible(false);
+      })
+      .catch((error) => console.error('Error adding measurement:', error));
+  };
+
+  const handleEditMeasurement = (measurementData: any) => {
+    fetch(`http://localhost:3000/measurements/edit`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ...measurementData, userId }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setMeasurements((prev) =>
+          prev.map((measurement) =>
+            measurement.id === measurementData.id ? data : measurement
+          )
+        );
+        setPopupVisible(false);
+      })
+      .catch((error) => console.error('Error editing measurement:', error));
+  };
+
+  const handleDeleteMeasurement = (measurementData: any) => {
+    fetch(`http://localhost:3000/measurements/delete`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: measurementData.id, userId }),
+    })
+      .then(() => {
+        setMeasurements((prev) =>
+          prev.filter((measurement) => measurement.id !== measurementData.id)
+        );
+      })
+      .catch((error) => console.error('Error deleting measurement:', error));
+  };
+
   const filteredData =
     activeTab === 'fields'
       ? fields
@@ -175,6 +229,16 @@ export default function CardList({ activeTab, searchQuery }: any) {
           initialValues={editData}
         />
       )}
+
+      {activeTab === 'measurements' && (
+        <AddMeasurementPopup
+          visible={isPopupVisible}
+          onClose={() => setPopupVisible(false)}
+          onSubmit={popupMode === 'add' ? handleAddMeasurement : handleEditMeasurement}
+          userId={userId}
+        />
+      )}
+
     </View>
   );
 }

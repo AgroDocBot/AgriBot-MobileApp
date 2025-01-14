@@ -24,22 +24,22 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
           <>
             <Text style={styles.cardTitle}>{data.field}</Text>
             <Text style={styles.cardText}>
-              <Ionicons name="calendar-outline" size={16} color="#fff" /> Date: {data.date}
+              <Ionicons name="calendar-outline" size={16} color="#fff" /> Date: {data.createdAt.substring(0, 10)}
             </Text>
             <Text style={styles.cardText}>
               <Ionicons name="time-outline" size={16} color="#fff" /> Duration: {data.duration}
             </Text>
             <Text style={styles.cardText}>
-              <Ionicons name="stats-chart-outline" size={16} color="#fff" /> Percent: {data.percent}
+              <Ionicons name="stats-chart-outline" size={16} color="#fff" /> Percent: {data.explored}
             </Text>
           </>
         );
       case 'diseases':
         return (
           <>
-            <Text style={styles.cardTitle}>{data.name}</Text>
+            <Text style={styles.cardTitle}>{data.diseaseName}</Text>
             <Text style={styles.cardText}>
-              <Ionicons name="flower-outline" size={16} color="#fff" /> Plant: {data.plant}
+              <Ionicons name="flower-outline" size={16} color="#fff" /> Plant: {data.affectedPlants}
             </Text>
             <Text style={styles.cardText}>
               <Ionicons
