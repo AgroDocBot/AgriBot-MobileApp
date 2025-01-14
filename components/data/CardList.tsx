@@ -20,7 +20,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
 
   useEffect(() => {
     if (userId) {
-      fetch(`http://localhost:3000/fields/getfields/${userId}`, {
+      fetch(`https://agribot-backend-abck.onrender.com/fields/getfields/${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
     }
 
     if (username) {
-      fetch(`http://localhost:3000/measurements/read/${username}`, {
+      fetch(`https://agribot-backend-abck.onrender.com/measurements/read/${username}`, {
         method: 'GET',
       })
         .then((response) => response.json())
@@ -40,7 +40,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
         .catch((error) => console.error('Error fetching measurements:', error));
     }
 
-    fetch(`http://localhost:3000/diseases/all`, { method: 'GET' })
+    fetch(`https://agribot-backend-abck.onrender.com/diseases/all`, { method: 'GET' })
       .then((response) => response.json())
       .then((data) => setDiseases(data))
       .catch((error) => console.error('Error fetching diseases:', error));
@@ -52,7 +52,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
     console.log("Current User ID: " + user.id);
     const curId = user.id;
     console.log("Added id: "+curId);
-    fetch('http://localhost:3000/fields/create', {
+    fetch('https://agribot-backend-abck.onrender.com/fields/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
   };
 
   const handleEdit = (fieldData: any) => {
-    fetch(`http://localhost:3000/fields/edit`, {
+    fetch(`https://agribot-backend-abck.onrender.com/fields/edit`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
   };
 
   const handleDelete = (fieldData: any) => {
-    fetch(`http://localhost:3000/fields/delete`, {
+    fetch(`https://agribot-backend-abck.onrender.com/fields/delete`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
   };
 
   const handleAddMeasurement = (measurementData: any) => {
-    fetch('http://localhost:3000/measurements/create', {
+    fetch('https://agribot-backend-abck.onrender.com/measurements/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
   };
 
   const handleEditMeasurement = (measurementData: any) => {
-    fetch(`http://localhost:3000/measurements/edit`, {
+    fetch(`https://agribot-backend-abck.onrender.com/measurements/edit`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
   };
 
   const handleDeleteMeasurement = (measurementData: any) => {
-    fetch(`http://localhost:3000/measurements/delete`, {
+    fetch(`https://agribot-backend-abck.onrender.com/measurements/delete`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

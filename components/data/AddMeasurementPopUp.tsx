@@ -21,7 +21,7 @@ export default function AddMeasurementPopup({
 
   useEffect(() => {
     if (userId) {
-      fetch(`http://localhost:3000/fields/getfields/${userId}`)
+      fetch(`https://agribot-backend-abck.onrender.com/fields/getfields/${userId}`)
         .then((response) => response.json())
         .then((data) => setFields(data))
         .catch((error) => console.error('Error fetching fields:', error));

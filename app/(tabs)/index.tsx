@@ -46,8 +46,8 @@ export default function HomeScreen() {
 
   const handleSubmit = async () => {
     const url = isSignup
-      ? 'http://localhost:3000/auth/register'
-      : 'http://localhost:3000/auth/login';
+      ? 'https://agribot-backend-abck.onrender.com/auth/register'
+      : 'https://agribot-backend-abck.onrender.com/auth/login';
 
     const body = isSignup
       ? { username, email, password }
