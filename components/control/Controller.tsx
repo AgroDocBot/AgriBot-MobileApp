@@ -4,6 +4,7 @@ import { Dimensions } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useEffect } from 'react';
 import { NetworkInfo } from 'react-native-network-info';
+import { useSelector } from 'react-redux';
 
 export default function RobotControl({ isConnected }: { isConnected: boolean }) {
   const [photo, setPhoto] = useState<any>('');
@@ -12,6 +13,23 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
   const [esp32Ws, setEsp32Ws] = useState<WebSocket>();
   const [rp5Ws, setRp5Ws] = useState<WebSocket>();
   const [isPolling, setPolling] = useState<boolean>(true);
+
+  const currentMeasurementId = useSelector((state: any) => state.measurement.currentMeasurementId);
+  
+  const collectPlantData = (plantData: any) => {
+    const endpoint = plantData.isHealthy
+      ? 'http://localhost:3000/plant/healthy/add'
+      : 'http://localhost:3000/plant/diseased/add';
+
+    fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...plantData, measurementId: currentMeasurementId }),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log('Plant data added:', data))
+      .catch((error) => console.error('Error:', error));
+  };
   
   useEffect(() => {
 
@@ -79,6 +97,16 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
             let e = result.indexOf("Prediction Probabilities:");
 
             let resClass = result.substring(s + 16, e -3);
+
+            const plantData = {
+              plant : resClass.substring(1, 5),
+              isHealthy : resClass.includes('Healthy'),
+              disease : resClass.substring(6, e-3),
+              latitude : classMsg.latitude, //resClass.substring(resClass.indexOf('lat:') + 5, 6),
+              longitude : classMsg.longitude//resClass.substring(resClass.indexOf('lon: ') + 5, 6)
+            }
+
+            collectPlantData(plantData);
             setMessage(resClass);
           }
         };
@@ -128,7 +156,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
 
   const takePhoto = () => {
     if (rp5Ws && rp5Ws.readyState === WebSocket.OPEN) {
-      const messageTake = { action: 'shoot_assess' }; // WebSocket command to take a photo
+      const messageTake = { action: 'shoot_assess_gps' }; // WebSocket command to take a photo
       rp5Ws.send(JSON.stringify(messageTake));
       console.log('Requested assessment')
       const messageGet = {action : 'shoot_show'};

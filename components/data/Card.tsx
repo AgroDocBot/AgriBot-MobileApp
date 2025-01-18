@@ -1,21 +1,50 @@
-import React, { useState, useSyncExternalStore } from 'react';
+import React, { useState, useSyncExternalStore, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Pressable } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { startMeasurement, stopMeasurement, incrementDuration } from '@/redux/measurementSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function Card({ data, activeTab, onEdit, onRemove }: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const [measurementRunning, setMeasurementRunning] = useState<boolean>(false);
 
-  function toggleMeasurement() {
-    console.log('pressed')
-    if(measurementRunning!) {
+  const dispatch = useDispatch();
+
+  const toggleMeasurement = () => {
+    if (measurementRunning) {
       setMeasurementRunning(false);
-      console.log('should be turned on')
-    } else  {
+      dispatch(stopMeasurement());
+    } else {
       setMeasurementRunning(true);
-      console.log('should be turned off')
+      dispatch(startMeasurement(data.id));
     }
-  }
+  };
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+
+    if (measurementRunning) {
+      interval = setInterval(() => {
+        dispatch(incrementDuration());
+        console.log('sec added');
+        console.log(JSON.stringify({duration: interval, explored: data.explored, measurementId: data.id }));
+        fetch(`https://agribot-backend-abck.onrender.com/measurements/edit`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
+          },
+          body: JSON.stringify({duration: interval, explored: data.explored, measurementId: data.id }),
+        });
+      }, 1000);
+    } else if (!measurementRunning && interval) {
+      clearInterval(interval);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [measurementRunning, dispatch]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -37,7 +66,7 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
             <View style={styles.title_buttonWrapper}>
               <Text style={styles.cardTitle}>{data.fieldId}</Text>
               <TouchableOpacity onPress={() => {toggleMeasurement()}} style={styles.playButton}>
-                <Ionicons name={measurementRunning ? 'play' : 'pause'} size={30} color="#fff" />
+                <Ionicons name={measurementRunning ? 'pause' : 'play'} size={30} color="#fff" />
               </TouchableOpacity>
             </View>
             <Text style={styles.cardText}>
