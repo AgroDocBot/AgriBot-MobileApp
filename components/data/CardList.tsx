@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions } from 'react-native';
 import Card from './Card';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AddFieldPopup from './AddFieldPopUp';
@@ -160,7 +160,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: measurementData.id, userId }),
+      body: JSON.stringify({ measurementId: measurementData.id, userId }),
     })
       .then(() => {
         setMeasurements((prev) =>
@@ -172,13 +172,24 @@ export default function CardList({ activeTab, searchQuery }: any) {
 
   const filteredData =
     activeTab === 'fields'
-      ? fields
+      ? (
+          fields.filter((item) =>
+            item.fieldname.toLowerCase().includes(searchQuery.toLowerCase())
+            
+      ))
       : activeTab === 'measurements'
-      ? measurements
-      : diseases;
+      ? (
+          measurements.filter((item) =>
+            item.createdAt.toLowerCase().includes(searchQuery.toLowerCase()) 
+      ))
+      : (
+        diseases.filter((item) =>
+            item.diseaseName.toLowerCase().includes(searchQuery.toLowerCase())
+
+      ));
 
   return (
-    <View>
+    <View style={styles.wrapper}>
       {filteredData.length ? (
         filteredData.map((item: any, index: number) => (
           <Card
@@ -190,7 +201,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
               setPopupMode('edit');
               setPopupVisible(true);
             }}
-            onRemove={handleDelete}
+            onRemove={activeTab === 'measurements' ? handleDeleteMeasurement : handleDelete}
           />
         ))
       ) : (
@@ -238,10 +249,11 @@ export default function CardList({ activeTab, searchQuery }: any) {
           userId={userId}
         />
       )}
-
     </View>
   );
 }
+
+const screenHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   noResults: { color: '#ccc', textAlign: 'center', marginTop: 20 },
@@ -252,5 +264,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
   },
+  wrapper: {
+    height: screenHeight * 0.75,
+  }
 });
 

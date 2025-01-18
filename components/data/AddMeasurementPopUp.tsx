@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
+import { PaperProvider, Modal } from 'react-native-paper';
 
 interface AddMeasurementPopupProps {
   visible: boolean;
@@ -45,8 +46,8 @@ export default function AddMeasurementPopup({
   if (!visible) return null;
 
   return (
-    <View style={styles.overlay}>
-      <View style={styles.container}>
+    <PaperProvider>
+      <Modal visible={visible} contentContainerStyle={styles.container}>
         <Text style={styles.title}>Add Measurement</Text>
         <Picker
           selectedValue={selectedField}
@@ -65,8 +66,8 @@ export default function AddMeasurementPopup({
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
         </View>
-      </View>
-    </View>
+      </Modal>
+    </PaperProvider>
   );
 }
 
@@ -79,24 +80,27 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'red',
+    height: '100%',
+    width: '100%',
+    elevation: 1000,
+    zIndex: 1001
   },
   container: {
-    backgroundColor: '#fff',
-    padding: 20,
+    backgroundColor: '#333333',
+    position: "absolute",
+    bottom: 0,
     borderRadius: 10,
-    width: '90%',
-    maxWidth: 400,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 5,
+    width: '100%',
+    padding: '1rem',
+    height: 200
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 15,
     textAlign: 'center',
+    color: 'white'
   },
   picker: {
     height: 50,

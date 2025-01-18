@@ -1,9 +1,21 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView } from 'react-native';
+import React, { useState, useSyncExternalStore } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Pressable } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function Card({ data, activeTab, onEdit, onRemove }: any) {
   const [modalVisible, setModalVisible] = useState(false);
+  const [measurementRunning, setMeasurementRunning] = useState<boolean>(false);
+
+  function toggleMeasurement() {
+    console.log('pressed')
+    if(measurementRunning!) {
+      setMeasurementRunning(false);
+      console.log('should be turned on')
+    } else  {
+      setMeasurementRunning(true);
+      console.log('should be turned off')
+    }
+  }
 
   const renderContent = () => {
     switch (activeTab) {
@@ -22,7 +34,12 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
       case 'measurements':
         return (
           <>
-            <Text style={styles.cardTitle}>{data.field}</Text>
+            <View style={styles.title_buttonWrapper}>
+              <Text style={styles.cardTitle}>{data.fieldId}</Text>
+              <TouchableOpacity onPress={() => {toggleMeasurement()}} style={styles.playButton}>
+                <Ionicons name={measurementRunning ? 'play' : 'pause'} size={30} color="#fff" />
+              </TouchableOpacity>
+            </View>
             <Text style={styles.cardText}>
               <Ionicons name="calendar-outline" size={16} color="#fff" /> Date: {data.createdAt.substring(0, 10)}
             </Text>
@@ -32,6 +49,7 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
             <Text style={styles.cardText}>
               <Ionicons name="stats-chart-outline" size={16} color="#fff" /> Percent: {data.explored}
             </Text>
+
           </>
         );
       case 'diseases':
@@ -93,4 +111,21 @@ const styles = StyleSheet.create({
   modalTitle: { color: '#fff', fontSize: 22, marginBottom: 10 },
   modalText: { color: '#ccc', textAlign: 'center' },
   closeButton: { marginTop: 20 },
+  playButton: {
+    width : '3rem',
+    height: '3rem',
+    borderRadius: 10,
+    backgroundColor: '#4CAF50',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    paddingLeft: '0.6rem'
+  },
+  title_buttonWrapper: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    //backgroundColor: 'red'
+  }
 });

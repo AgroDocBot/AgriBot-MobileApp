@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { PaperProvider, Modal } from 'react-native-paper';
 
 export default function AddFieldPopup({ visible, onClose, onSubmit, initialValues }: any) {
   if (!visible) return null;
@@ -23,8 +24,8 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
   };
 
   return (
-    <View style={styles.overlay}>
-      <View style={styles.container}>
+    <PaperProvider>
+      <Modal visible={visible} onDismiss={onClose} contentContainerStyle={styles.modal}>
         <Text style={styles.title}>Add New Field</Text>
         <TextInput
           style={styles.input}
@@ -64,8 +65,8 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
         </View>
-      </View>
-    </View>
+      </Modal>
+    </PaperProvider>
   );
 }
 
@@ -78,6 +79,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    elevation: 1000,
+    zIndex: 1001
   },
   container: {
     backgroundColor: '#fff',
@@ -88,14 +93,24 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 10,
-    elevation: 500,
-    zIndex: 999
+    elevation: 1001,
+    zIndex: 999,
+    minHeight: 500
+  },
+  modal: {
+    backgroundColor: '#333333',
+    position: "absolute",
+    bottom: 0,
+    borderRadius: 10,
+    width: '100%',
+    padding: '1rem'
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 15,
     textAlign: 'center',
+    color: 'white'
   },
   input: {
     borderWidth: 1,
@@ -105,6 +120,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginBottom: 15,
     fontSize: 16,
+    color: 'white'
   },
   buttonContainer: {
     flexDirection: 'row',

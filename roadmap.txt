@@ -3,12 +3,15 @@ v0.2 - Camera movement control and fixed bugs with Control tab in general;
 general structure of the mobile app defined
 v0.3 - Finished strucure of Account tab, GPS support
 v0.4 - Mobile data usage and WiFi enabled, staged integration with backend
-infractructure (locally)
+infractructure (locally) 
 v0.5 - State management redesign and improvement, fixing Google-related
 problems
-v0.6 - Integration with backend (production)
+- Also, to implement state user preferences via serialization (JSON)
+v0.6 - Integration with backend (production) - already implemented
 v0.7 - Redesign, implementation of different interfaces for control
 (keypad, wheel)
+
+-- From Roskata: Change the color scheme (darker background, lighter component background, but still white text color)
 v0.8 - Adjustments to fit new hardware-related requirements
 
 v1.0 (Baseline Update) - Fully functioning app with baseline features
