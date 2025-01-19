@@ -56,7 +56,8 @@ export default function HomeScreen() {
     try {
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',             'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
+      },
         body: JSON.stringify(body),
       });
       const data = await response.json();

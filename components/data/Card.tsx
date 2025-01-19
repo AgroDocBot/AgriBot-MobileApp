@@ -8,7 +8,20 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const [measurementRunning, setMeasurementRunning] = useState<boolean>(false);
 
+  const [measurementData, setMeasurementData] = useState([{}]);
+
   const dispatch = useDispatch();
+
+  const openModal = () => {
+    setModalVisible(true);
+    fetchPlantData(data.id).then(setMeasurementData);
+  };
+
+  const fetchPlantData = (measurementId: number) => {
+    return fetch(`http://localhost:3000/plant/data/${measurementId}`)
+      .then((response) => response.json())
+      .catch((error) => console.error('Error fetching plant data:', error));
+  };
 
   const toggleMeasurement = () => {
     if (measurementRunning) {
@@ -103,7 +116,7 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
 
   return (
     <View style={[styles.card, styles[`${activeTab}Card`]]}>
-      <TouchableOpacity onPress={() => setModalVisible(true)}>{renderContent()}</TouchableOpacity>
+      <TouchableOpacity onPress={() => openModal()}>{renderContent()}</TouchableOpacity>
       <View style={styles.actionButtons}>
         <TouchableOpacity onPress={() => onEdit(data)}>
           <Ionicons name="create-outline" size={24} color="#fff" />
@@ -115,8 +128,10 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
 
       <Modal visible={modalVisible} animationType="slide">
         <ScrollView contentContainerStyle={styles.modalContent}>
-          <Text style={styles.modalTitle}>Details</Text>
-          <Text style={styles.modalText}>{JSON.stringify(data, null, 2)}</Text>
+          <Text>Measurement Details</Text>
+          {measurementData.map((plant : any, index : any) => (
+            <Text key={index}>{JSON.stringify(plant, null, 2)}</Text>
+          ))}
           <TouchableOpacity
             onPress={() => setModalVisible(false)}
             style={styles.closeButton}>

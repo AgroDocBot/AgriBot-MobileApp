@@ -24,6 +24,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
         },
       })
         .then((response) => response.json())
@@ -56,6 +57,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
       },
       body: JSON.stringify({
         fieldname: fieldData.fieldName,
@@ -78,6 +80,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
       },
       body: JSON.stringify({
         fieldname: fieldData.fieldName,
@@ -104,6 +107,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
       },
       body: JSON.stringify({
         fieldname: fieldData.fieldname,
@@ -123,6 +127,8 @@ export default function CardList({ activeTab, searchQuery }: any) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
+
       },
       body: JSON.stringify({ ...measurementData, userId }),
     })
@@ -139,6 +145,8 @@ export default function CardList({ activeTab, searchQuery }: any) {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
+
       },
       body: JSON.stringify({ ...measurementData, userId }),
     })
@@ -159,6 +167,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
       },
       body: JSON.stringify({ measurementId: measurementData.id, userId }),
     })

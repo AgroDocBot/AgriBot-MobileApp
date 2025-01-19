@@ -12,14 +12,13 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
   const [isAuto, setAuto] = useState(false);
   const [esp32Ws, setEsp32Ws] = useState<WebSocket>();
   const [rp5Ws, setRp5Ws] = useState<WebSocket>();
-  const [isPolling, setPolling] = useState<boolean>(true);
 
   const currentMeasurementId = useSelector((state: any) => state.measurement.currentMeasurementId);
   
-  const collectPlantData = (plantData: any) => {
-    const endpoint = plantData.isHealthy
-      ? 'http://localhost:3000/plant/healthy/add'
-      : 'http://localhost:3000/plant/diseased/add';
+  const collectPlantData = (plantData: any, isHealthy : boolean) => {
+    const endpoint = isHealthy
+      ? 'https://agribot-backend-abck.onrender.com/plant/healthy/add'
+      : 'https://agribot-backend-abck.onrender.com/plant/diseased/add';
 
     fetch(endpoint, {
       method: 'POST',
@@ -98,15 +97,27 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
 
             let resClass = result.substring(s + 16, e -3);
 
-            const plantData = {
-              plant : resClass.substring(1, 5),
-              isHealthy : resClass.includes('Healthy'),
-              disease : resClass.substring(6, e-3),
-              latitude : classMsg.latitude, //resClass.substring(resClass.indexOf('lat:') + 5, 6),
-              longitude : classMsg.longitude//resClass.substring(resClass.indexOf('lon: ') + 5, 6)
-            }
+            const isHealthy : boolean = resClass.includes('Healthy');
 
-            collectPlantData(plantData);
+            if (isHealthy) {
+            const plantData = {
+              latitude : classMsg.latitude, //resClass.substring(resClass.indexOf('lat:') + 5, 6),
+              longitude : classMsg.longitude, //resClass.substring(resClass.indexOf('lon: ') + 5, 6)
+              crop : resClass.substring(1, 5),
+              measurementId : currentMeasurementId
+            }
+            collectPlantData(plantData, isHealthy);
+          }
+          else {
+            const plantData = {
+              latitude : classMsg.latitude, //resClass.substring(resClass.indexOf('lat:') + 5, 6),
+              longitude : classMsg.longitude, //resClass.substring(resClass.indexOf('lon: ') + 5, 6)
+              crop : resClass.substring(1, 5),
+              disease : resClass.substring(6, e-3),
+              measurementId : currentMeasurementId
+            }
+            collectPlantData(plantData, isHealthy);
+          }
             setMessage(resClass);
           }
         };
