@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Pressable 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { startMeasurement, stopMeasurement, incrementDuration } from '@/redux/measurementSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import i18n from '@/translations/i18n';
 
 export default function Card({ data, activeTab, onEdit, onRemove }: any) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -11,6 +12,12 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
   const [measurementData, setMeasurementData] = useState([{}]);
 
   const dispatch = useDispatch();
+
+  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+
+  if(language === 'English') i18n.locale = 'en';
+  else if(language === 'Български') i18n.locale = 'bg';
+  else i18n.locale = 'de';
 
   const openModal = () => {
     setModalVisible(true);
@@ -69,7 +76,7 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
               <Ionicons name="leaf-outline" size={16} color="#fff" /> Crops: {data.crop}
             </Text>
             <Text style={styles.cardText}>
-              <Ionicons name="location-outline" size={16} color="#fff" /> Location: {data.longitude}
+              <Ionicons name="location-outline" size={16} color="#fff" /> Location: {data.latitude}, {data.longitude}
             </Text>
           </>
         );
@@ -83,13 +90,13 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
               </TouchableOpacity>
             </View>
             <Text style={styles.cardText}>
-              <Ionicons name="calendar-outline" size={16} color="#fff" /> Date: {data.createdAt.substring(0, 10)}
+              <Ionicons name="calendar-outline" size={16} color="#fff" /> {i18n.t('measurements.date')}: {data.createdAt.substring(0, 10)}
             </Text>
             <Text style={styles.cardText}>
-              <Ionicons name="time-outline" size={16} color="#fff" /> Duration: {data.duration}
+              <Ionicons name="time-outline" size={16} color="#fff" /> {i18n.t('measurements.duration')}: {data.duration}
             </Text>
             <Text style={styles.cardText}>
-              <Ionicons name="stats-chart-outline" size={16} color="#fff" /> Percent: {data.explored}
+              <Ionicons name="stats-chart-outline" size={16} color="#fff" /> {i18n.t('measurements.percent')}: {data.explored}
             </Text>
 
           </>

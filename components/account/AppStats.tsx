@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { VictoryChart, VictoryBar, VictoryPie, VictoryTheme } from 'victory-native';
+import i18n from '@/translations/i18n';
+import { useDispatch, useSelector } from 'react-redux';
 
 const sampleStats = {
   controlHours: [
@@ -21,18 +23,25 @@ const sampleStats = {
 };
 
 export const AppStats = () => {
+
+  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+
+  if(language === 'English') i18n.locale = 'en';
+  else if(language === 'Български') i18n.locale = 'bg';
+  else i18n.locale = 'de';
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>App Statistics</Text>
+      <Text style={styles.header}>{i18n.t('stats.appStats')}</Text>
 
       {/* Control Hours Chart */}
-      <Text style={styles.subHeader}>Hours Spent Controlling Robot</Text>
+      <Text style={styles.subHeader}>{i18n.t('stats.hours')}</Text>
       <VictoryChart theme={VictoryTheme.material}>
         <VictoryBar data={sampleStats.controlHours} style={{ data: { fill: "#4caf50" } }} />
       </VictoryChart>
 
       {/* Field Coverage Pie Chart */}
-      <Text style={styles.subHeader}>Field Coverage</Text>
+      <Text style={styles.subHeader}>{i18n.t('stats.fieldCoverage')}</Text>
       <VictoryPie
         data={sampleStats.fieldCoverage}
         colorScale={["#4caf50", "#ff9800"]}
@@ -41,7 +50,7 @@ export const AppStats = () => {
       />
 
       {/* Measurements Success Rate */}
-      <Text style={styles.subHeader}>Measurement Success Rate</Text>
+      <Text style={styles.subHeader}>{i18n.t('stats.measurementRates')}</Text>
       <VictoryPie
         data={sampleStats.measurements}
         colorScale={["#4caf50", "#f44336"]}

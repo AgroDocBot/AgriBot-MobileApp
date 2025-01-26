@@ -1,9 +1,12 @@
+
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { PaperProvider, Modal } from 'react-native-paper';
+import MapView, { Marker } from 'react-native-maps';
 
 export default function AddFieldPopup({ visible, onClose, onSubmit, initialValues }: any) {
   if (!visible) return null;
+
 
   const [fieldName, setFieldName] = useState(initialValues?.fieldname || '');
   const [crop, setCrop] = useState(initialValues?.crop || '');
@@ -71,46 +74,20 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%',
-    elevation: 1000,
-    zIndex: 1001
-  },
-  container: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 10,
-    width: '90%',
-    maxWidth: 400,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 1001,
-    zIndex: 999,
-    minHeight: 500
-  },
   modal: {
     backgroundColor: '#333333',
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     borderRadius: 10,
     width: '100%',
-    padding: '1rem'
+    padding: '1rem',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 15,
     textAlign: 'center',
-    color: 'white'
+    color: 'white',
   },
   input: {
     borderWidth: 1,
@@ -120,7 +97,16 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginBottom: 15,
     fontSize: 16,
-    color: 'white'
+    color: 'white',
+  },
+  mapContainer: {
+    height: Dimensions.get('window').height * 0.4,
+    marginBottom: 15,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  map: {
+    flex: 1,
   },
   buttonContainer: {
     flexDirection: 'row',

@@ -3,10 +3,11 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLanguage, toggleControlStyle, toggleUnitsSystem } from '../../redux/settingsSlice';
+import i18n from '@/translations/i18n';
 
 export const SettingsSection = () => {
   const dispatch = useDispatch();
-  const { language, controlStyle, units } = useSelector((state: any) => state.settings);
+  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
 
   const [languageDropdown, setLanguageDropdown] = useState<boolean>(false);
   const [controlStyleDropdown, setControlStyleDropdown] = useState<boolean>(false);
@@ -14,23 +15,26 @@ export const SettingsSection = () => {
 
   return (
     <View style={styles.settingsContainer}>
-      <Text style={styles.header}>General Settings</Text>
+      <Text style={styles.header}>{i18n.t('settings.general')}</Text>
       {/* Language Setting */}
       <TouchableOpacity
         style={styles.settingItem}
         onPress={() => setLanguageDropdown(!languageDropdown)}>
         <Ionicons name={languageDropdown ? "chevron-down-outline" : "chevron-forward-outline" } size={24} color="#FFF" style={ {marginRight : 20} }/>
         <Ionicons name="language-outline" size={24} color="#FFF" />
-        <Text style={styles.settingText}>Language: {language}</Text>
+        <Text style={styles.settingText}>{i18n.t('settings.language')}: {language}</Text>
       </TouchableOpacity>
       {languageDropdown && (
         <View style={styles.dropdown}>
-          {['English', 'German', 'Bulgarian'].map((lang) => (
+          {['English', 'Deutsch', 'Български'].map((lang) => (
             <TouchableOpacity
               key={lang}
               style={styles.dropdownItem}
               onPress={() => {
                 dispatch(setLanguage(lang));
+                if(lang === 'English') i18n.locale = 'en';
+                else if(lang === 'Български') i18n.locale = 'bg';
+                else i18n.locale = 'de';
                 setLanguageDropdown(false);
               }}>
               <Text style={[styles.dropdownText, lang === language && styles.selectedText]}>
@@ -48,7 +52,7 @@ export const SettingsSection = () => {
         <Ionicons name={controlStyleDropdown ? "chevron-down-outline" : "chevron-forward-outline" } size={24} color="#FFF" style={ {marginRight : 20} }/>
         <Ionicons name="game-controller-outline" size={24} color="#FFF" />
         <Text style={styles.settingText}>
-          Control Style: {controlStyle === 'keypad' ? 'Keypad' : 'Wheel'}
+        {i18n.t('settings.controlStyle')}: {controlStyle === 'keypad' ? i18n.t('settings.keypad') : i18n.t('settings.wheel')}
         </Text>
       </TouchableOpacity>
       {controlStyleDropdown && (
@@ -74,7 +78,7 @@ export const SettingsSection = () => {
           onPress={() => setUnitsDropDown(!unitsDropdown)}>
         <Ionicons name={unitsDropdown ? "chevron-down-outline" : "chevron-forward-outline" } size={24} color="#FFF" style={ {marginRight : 20} }/>
         <Ionicons name="speedometer-outline" size={24} color="#FFF" />
-        <Text style={styles.settingText}>Measurement Units: Metric</Text>
+        <Text style={styles.settingText}>{i18n.t('settings.units')}: {unitsSystem === 'metric' ? i18n.t('settings.metric') : i18n.t('settings.imperial')}</Text>
       </TouchableOpacity>
       {unitsDropdown && (
         <View style={styles.dropdown}>

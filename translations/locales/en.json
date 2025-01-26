@@ -1,0 +1,33 @@
+{
+    "settings": {
+      "general": "General Settings",
+      "language": "Language",
+      "controlStyle": "Control Style",
+      "units": "Measurement Units",
+      "metric": "Metric",
+      "imperial": "Imperial",
+      "keypad": "Keypad",
+      "wheel": "Wheel"
+    },
+    "stats" : {
+      "appStats": "App Stats",
+      "hours": "Hours spend controlling the robot",
+      "fieldCoverage": "Field Coverage",
+      "measurementRates": "Measurement success rate"
+    },
+    "personal": {
+      "personalSettings": "Настройки на профила",
+      "changePassword": "Change Password",
+      "logout": "Log out"
+    },
+    "measurements": {
+      "date": "Date",
+      "duration": "Duration",
+      "percent": "Percent"
+    },
+    "menu": {
+      "fields": "fields",
+      "measurements": "measurements",
+      "diseases": "diseases"
+    }
+  }

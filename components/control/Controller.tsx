@@ -13,7 +13,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
   const [esp32Ws, setEsp32Ws] = useState<WebSocket>();
   const [rp5Ws, setRp5Ws] = useState<WebSocket>();
 
-  const currentMeasurementId = useSelector((state: any) => state.measurement.currentMeasurementId);
+  //const currentMeasurementId = useSelector((state: any) => state.measurement.currentMeasurementId);
   
   const collectPlantData = (plantData: any, isHealthy : boolean) => {
     const endpoint = isHealthy
@@ -23,7 +23,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
     fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...plantData, measurementId: currentMeasurementId }),
+      body: JSON.stringify({ ...plantData, measurementId: 3 }),
     })
       .then((response) => response.json())
       .then((data) => console.log('Plant data added:', data))
@@ -33,112 +33,108 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
   useEffect(() => {
 
     const connectWebSockets = async () => {
-
-      let connectedSSID : string | null = '';
+  
       let attempts = 0;
+      let rp5Socket: WebSocket | null = null;
+  
+      while (!rp5Socket || rp5Socket.readyState !== WebSocket.OPEN) { 
+        try {
+          rp5Socket = new WebSocket('ws://192.168.4.1:3003');
+          
+          rp5Socket.onopen = () => {
+            console.log('Connected to main logic module');
+          };
+  
+          rp5Socket.onmessage = (ev) => {
+            if (ev.data instanceof Blob) {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const base64data = reader.result;
+                setPhoto(base64data);
+              };
+              reader.readAsDataURL(ev.data); // Convert Blob to base64
+            } else {
+              const classMsg = ev.data;
+              let result = JSON.stringify(classMsg);
+              let s = result.indexOf("Predicted Class:");
+              let e = result.indexOf("Prediction Probabilities:");
+  
+              let resClass = result.substring(s + 16, e - 3);
+  
+              console.log("Received raw from RP5: "+ result);
 
-      while (attempts < 10) { // Max 10 attempts to confirm network stability
-        connectedSSID = "AgriBot"
-        if (connectedSSID === 'AgriBot') {
-          console.log('Connected to AgriBot network.');
-          break;
+              const isHealthy: boolean = resClass.includes('Healthy');
+  
+              if (isHealthy) {
+                const plantData = {
+                  latitude: classMsg.latitude,
+                  longitude: classMsg.longitude,
+                  crop: resClass.substring(1, 5),
+                  measurementId: 3
+                };
+                collectPlantData(plantData, isHealthy);
+              } else {
+                const plantData = {
+                  latitude: classMsg.latitude,
+                  longitude: classMsg.longitude,
+                  crop: resClass.substring(1, 5),
+                  disease: resClass.substring(6, e - 3),
+                  measurementId: 3
+                };
+                collectPlantData(plantData, isHealthy);
+              }
+
+              console.log("Longitude: "+classMsg.longitude);
+              setMessage(resClass);
+            }
+          };
+  
+          rp5Socket.onerror = (e) => {
+            console.error('RP5 WebSocket error:', e.timeStamp);
+          };
+  
+          rp5Socket.onclose = (e) => {
+            console.log('RP5 WebSocket closed:', e.code, e.reason);
+          };
+  
+          setRp5Ws(rp5Socket);
+
+          await new Promise((resolve) => setTimeout(resolve, 2000)); // Retry after 1 second
+
+        } catch (error) {
+          console.log('Failed to connect, retrying...');
+          attempts++;
+          await new Promise((resolve) => setTimeout(resolve, 1000)); // Retry after 1 second
         }
-        attempts++;
-        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
-
-      if (connectedSSID !== 'AgriBot') {
-        Alert.alert('Error', 'Failed to connect to the AgriBot network.');
-        return;
-      }
-
-      //await new Promise((resolve) => setTimeout(resolve, 1000));
-      Alert.alert('Success', 'Connection successful!');
-      //const currentSSID = await NetworkInfo.getSSID();
-      if (connectedSSID === 'AgriBot' || connectedSSID === '') {   //just for test
-        const esp32Socket = new WebSocket('ws://192.168.4.18:81/ws'); 
-        esp32Socket.onopen = () => {
-          console.log('Connected to movement control module');
-        };
-        
-        esp32Socket.onmessage = (e) => {
-          console.log('Message from server:', e.data);
-        };
-        
-        esp32Socket.onerror = (e) => {
-          console.error('WebSocket error:', e.timeStamp);
-        };
-        
-        esp32Socket.onclose = (e) => {
-          console.log('WebSocket closed:', e.code, e.reason);
-        };
-        
-        setEsp32Ws(esp32Socket);
-        
-        //connects to ExpressJS server on the RP5 with WebSockets
-        const rp5Socket = new WebSocket('ws://192.168.4.1:3003')
-        rp5Socket.onopen = () => {
-          console.log('Connected to main logic module')
-        }; 
-
-        rp5Socket.onmessage = (ev) => {
-          if (ev.data instanceof Blob) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              const base64data = reader.result; 
-              setPhoto(base64data); 
-            };
-            reader.readAsDataURL(ev.data); // Convert Blob to base64
-          } else {
-            const classMsg = ev.data;
-            let result = JSON.stringify(classMsg);
-            let s = result.indexOf("Predicted Class:");
-            let e = result.indexOf("Prediction Probabilities:");
-
-            let resClass = result.substring(s + 16, e -3);
-
-            const isHealthy : boolean = resClass.includes('Healthy');
-
-            if (isHealthy) {
-            const plantData = {
-              latitude : classMsg.latitude, //resClass.substring(resClass.indexOf('lat:') + 5, 6),
-              longitude : classMsg.longitude, //resClass.substring(resClass.indexOf('lon: ') + 5, 6)
-              crop : resClass.substring(1, 5),
-              measurementId : currentMeasurementId
-            }
-            collectPlantData(plantData, isHealthy);
-          }
-          else {
-            const plantData = {
-              latitude : classMsg.latitude, //resClass.substring(resClass.indexOf('lat:') + 5, 6),
-              longitude : classMsg.longitude, //resClass.substring(resClass.indexOf('lon: ') + 5, 6)
-              crop : resClass.substring(1, 5),
-              disease : resClass.substring(6, e-3),
-              measurementId : currentMeasurementId
-            }
-            collectPlantData(plantData, isHealthy);
-          }
-            setMessage(resClass);
-          }
-        };
-
-        rp5Socket.onerror = (e) => {
-          console.error('RP5 WebSocket error:', e.timeStamp);
-        };
-
-        rp5Socket.onclose = (e) => {
-          console.log('RP5 WebSocket closed:', e.code, e.reason);
-        };
-
-        setRp5Ws(rp5Socket);
-      }
-    }
-
+  
+      Alert.alert('Success', 'Connected to main logic module!');
+  
+      const esp32Socket = new WebSocket('ws://192.168.4.18:81/ws');
+      esp32Socket.onopen = () => {
+        console.log('Connected to movement control module');
+      };
+  
+      esp32Socket.onmessage = (e) => {
+        console.log('Message from server:', e.data);
+      };
+  
+      esp32Socket.onerror = (e) => {
+        console.error('WebSocket error:', e.timeStamp);
+      };
+  
+      esp32Socket.onclose = (e) => {
+        console.log('WebSocket closed:', e.code, e.reason);
+      };
+  
+      setEsp32Ws(esp32Socket);
+    };
+  
     connectWebSockets();
-
+  
     return () => {
-        esp32Ws?.close();
-        rp5Ws?.close();
+      esp32Ws?.close();
+      rp5Ws?.close();
     };
   }, [isConnected]);
   

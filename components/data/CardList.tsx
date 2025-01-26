@@ -5,6 +5,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import AddFieldPopup from './AddFieldPopUp';
 import { useSelector } from 'react-redux';
 import AddMeasurementPopup from './AddMeasurementPopUp';
+import i18n from '@/translations/i18n';
 
 export default function CardList({ activeTab, searchQuery }: any) {
   const [isPopupVisible, setPopupVisible] = useState(false);
@@ -17,6 +18,12 @@ export default function CardList({ activeTab, searchQuery }: any) {
   const userId = useSelector((state: any) => state.auth.user?.id);
   const user = useSelector((state: any) => state.auth.user);
   const username = useSelector((state: any) => state.auth.user?.username);
+
+  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+
+  if(language === 'English') i18n.locale = 'en';
+  else if(language === 'Български') i18n.locale = 'bg';
+  else i18n.locale = 'de';
 
   useEffect(() => {
     if (userId) {

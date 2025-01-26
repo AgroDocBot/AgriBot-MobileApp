@@ -44,6 +44,24 @@ export function ConnectScreen({setConnectedState} : ConnectScreenProps) {
       await new Promise((resolve) => setTimeout(resolve, 5000));
       NetworkManager.testPackage()
       NetworkManager.bindToMobileData();
+
+      try {
+        const response = await fetch('https://www.google.com', {
+          method: 'GET',
+          headers: {
+            Accept: 'text/html',
+          },
+        });
+  
+        if (response.ok) {
+          Alert.alert('Success', 'Internet connection is working properly!');
+        } else {
+          Alert.alert('Error', 'Internet connection is not stable or reachable.');
+        }
+      } catch (error) {
+        //Alert.alert('Error', 'Failed to connect to the internet.');
+        console.error('Connection check failed:', error);
+      }
     });
   }
 

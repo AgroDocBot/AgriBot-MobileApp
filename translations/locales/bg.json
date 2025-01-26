@@ -1,0 +1,34 @@
+{
+    "settings": {
+      "general": "Общи настройки",
+      "language": "Език",
+      "controlStyle": "Стил на управление",
+      "units": "Мерни единици",
+      "metric": "Метрични",
+      "imperial": "Империални",
+      "keypad": "Клавиатура",
+      "wheel": "Колело"
+    },
+    "stats" : {
+      "appStats": "Статистики на приложението",
+      "hours": "Брой часове, през които е контролиран роботът",
+      "fieldCoverage": "Покритие на полетата",
+      "measurementRates": "Резултати от измерванията"
+    },
+    "personal": {
+      "personalSettings": "Настройки на профила",
+      "changePassword": "Промени паролата си",
+      "logout": "Изход"
+    },
+    "measurements": {
+      "date": "Дата",
+      "duration": "Продължителност",
+      "percent": "Проучена площ"
+    },
+    "menu": {
+      "fields": "полета",
+      "measurements": "измервания",
+      "diseases": "болести"
+    }
+  }
+  

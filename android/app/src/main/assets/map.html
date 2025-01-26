@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        #map {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        var map = L.map('map').setView([42.136, 24.7421], 4); // Set your default center coordinates
+
+        L.tileLayer('file:///android_asset/tiles/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).on('loading', function(e) {
+            console.log('Loading tile:', e.url); // Log tile loading for debugging
+        }).addTo(map);
+
+        var marker = L.marker([42.136, 24.7421]).addTo(map); // Initial marker
+
+        map.on('click', function (e) {
+            var latLng = e.latlng;
+            marker.setLatLng(latLng); // Update marker location on map click
+            window.ReactNativeWebView.postMessage(JSON.stringify({ latitude: latLng.lat, longitude: latLng.lng }));
+        });
+
+        // Listen for GPS data from React Native
+        window.addEventListener('message', function (event) {
+            var data = JSON.parse(event.data);
+            if (data.latitude && data.longitude) {
+                var latLng = [data.latitude, data.longitude];
+                marker.setLatLng(latLng); // Update marker location from React Native
+                map.setView(latLng); // Adjust map center
+            }
+        });
+    </script>
+</body>
+</html>
