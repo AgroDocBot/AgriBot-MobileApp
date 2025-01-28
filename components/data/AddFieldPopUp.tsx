@@ -1,17 +1,29 @@
-
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import { PaperProvider, Modal } from 'react-native-paper';
-import MapView, { Marker } from 'react-native-maps';
+import React, { useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Modal } from 'react-native';
+import { WebView } from 'react-native-webview';
 
 export default function AddFieldPopup({ visible, onClose, onSubmit, initialValues }: any) {
-  if (!visible) return null;
+  const webViewRef = useRef(null);
 
+  const [fieldName, setFieldName] = React.useState(initialValues?.fieldName || '');
+  const [crop, setCrop] = React.useState(initialValues?.crop || '');
+  const [latitude, setLatitude] = React.useState(initialValues?.latitude || '');
+  const [longitude, setLongitude] = React.useState(initialValues?.longitude || '');
 
-  const [fieldName, setFieldName] = useState(initialValues?.fieldname || '');
-  const [crop, setCrop] = useState(initialValues?.crop || '');
-  const [latitude, setLatitude] = useState(initialValues?.latitude?.toString() || '');
-  const [longitude, setLongitude] = useState(initialValues?.longitude?.toString() || '');
+  const handleWebViewMessage = (event: any) => {
+    const data = JSON.parse(event.nativeEvent.data);
+    setLatitude(String(Math.round((Number(data.lat) + Number.EPSILON) * 100) / 100));
+    setLongitude(String(Math.round((Number(data.lng) + Number.EPSILON) * 100) / 100));
+    console.log("Received data from WV: "+JSON.stringify(data));
+  };
+
+  const sendLocationToWebView = () => {
+    const message = JSON.stringify({
+      latitude: parseFloat(latitude),
+      longitude: parseFloat(longitude),
+    });
+    webViewRef.current?.postMessage(message);
+  };
 
   const handleSubmit = () => {
     const parsedLatitude = parseFloat(latitude);
@@ -26,110 +38,123 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
     onClose();
   };
 
+  if (!visible) return null;
+
   return (
-    <PaperProvider>
-      <Modal visible={visible} onDismiss={onClose} contentContainerStyle={styles.modal}>
-        <Text style={styles.title}>Add New Field</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Field Name"
-          placeholderTextColor="#888"
-          value={fieldName}
-          onChangeText={setFieldName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Crop Type"
-          placeholderTextColor="#888"
-          value={crop}
-          onChangeText={setCrop}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Latitude"
-          placeholderTextColor="#888"
-          keyboardType="numeric"
-          value={latitude}
-          onChangeText={setLatitude}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Longitude"
-          placeholderTextColor="#888"
-          keyboardType="numeric"
-          value={longitude}
-          onChangeText={setLongitude}
-        />
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-            <Text style={styles.submitButtonText}>Submit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
+    <Modal visible={visible} animationType="slide" transparent>
+      <View style={styles.modalContainer}>
+        <View style={styles.modal}>
+          <Text style={styles.title}>Add New Field</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Field Name"
+            placeholderTextColor="#888"
+            value={fieldName}
+            onChangeText={setFieldName}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Crop Type"
+            placeholderTextColor="#888"
+            value={crop}
+            onChangeText={setCrop}
+          />
+          <View style={styles.mapContainer}>
+            <WebView
+              ref={webViewRef}
+              source={{ uri: 'file:///android_asset/map.html' }}
+              onMessage={handleWebViewMessage}
+              style={styles.map}
+            />
+            <TouchableOpacity style={styles.mapButton} onPress={sendLocationToWebView}>
+              <Text style={styles.mapButtonText}>Send Location</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+              <Text style={styles.buttonText}>Submit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={onClose}>
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </Modal>
-    </PaperProvider>
+      </View>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
   modal: {
-    backgroundColor: '#333333',
-    position: 'absolute',
-    bottom: 0,
+    width: Dimensions.get('window').width * 0.9,
+    padding: 20,
+    backgroundColor: '#fff',
     borderRadius: 10,
-    width: '100%',
-    padding: '1rem',
+    elevation: 5,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: 20,
     textAlign: 'center',
-    color: 'white',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#ccc',
     borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    padding: 10,
     marginBottom: 15,
-    fontSize: 16,
-    color: 'white',
   },
   mapContainer: {
-    height: Dimensions.get('window').height * 0.4,
-    marginBottom: 15,
+    height: 200,
+    borderWidth: 1,
+    borderColor: '#ccc',
     borderRadius: 8,
     overflow: 'hidden',
+    marginBottom: 15,
   },
   map: {
     flex: 1,
   },
+  mapButton: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  mapButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 20,
   },
-  submitButton: {
+  button: {
+    flex: 1,
     backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
+    padding: 10,
+    marginHorizontal: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
   },
-  submitButtonText: {
+  buttonText: {
     color: '#fff',
-    fontSize: 16,
-  },
-  closeButton: {
-    backgroundColor: '#FF6347',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: '#fff',
-    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
+
+
+
+
+
+
+
