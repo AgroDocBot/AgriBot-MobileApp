@@ -17,8 +17,8 @@ export default function RobotControl({ isConnected }: { isConnected: boolean }) 
   
   const collectPlantData = (plantData: any, isHealthy : boolean) => {
     const endpoint = isHealthy
-      ? 'https://agribot-backend-abck.onrender.com/plant/healthy/add'
-      : 'https://agribot-backend-abck.onrender.com/plant/diseased/add';
+      ? 'https://agribot-backend-abck.onrender.com/plants/healthy/add'
+      : 'https://agribot-backend-abck.onrender.com/plants/diseased/add';
 
     fetch(endpoint, {
       method: 'POST',

@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { VictoryChart, VictoryBar, VictoryPie, VictoryTheme } from 'victory-native';
 import i18n from '@/translations/i18n';
 import { useDispatch, useSelector } from 'react-redux';
+
+const screenWidth = Dimensions.get('window').width;
 
 const sampleStats = {
   controlHours: [
@@ -22,7 +24,7 @@ const sampleStats = {
   ],
 };
 
-export const AppStats = () => {
+export const  AppStats = () => {
 
   const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
 
@@ -36,7 +38,7 @@ export const AppStats = () => {
 
       {/* Control Hours Chart */}
       <Text style={styles.subHeader}>{i18n.t('stats.hours')}</Text>
-      <VictoryChart theme={VictoryTheme.material}>
+      <VictoryChart theme={VictoryTheme.material} width={0.9*screenWidth}>
         <VictoryBar data={sampleStats.controlHours} style={{ data: { fill: "#4caf50" } }} />
       </VictoryChart>
 
@@ -46,6 +48,7 @@ export const AppStats = () => {
         data={sampleStats.fieldCoverage}
         colorScale={["#4caf50", "#ff9800"]}
         style={{ labels: { fill: "#FFF" } }}
+        width={0.9*screenWidth}
         innerRadius={50}
       />
 
@@ -55,6 +58,7 @@ export const AppStats = () => {
         data={sampleStats.measurements}
         colorScale={["#4caf50", "#f44336"]}
         style={{ labels: { fill: "#FFF" } }}
+        width={0.9*screenWidth}
         innerRadius={50}
       />
     </View>

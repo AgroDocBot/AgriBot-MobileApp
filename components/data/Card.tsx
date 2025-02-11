@@ -1,5 +1,5 @@
 import React, { useState, useSyncExternalStore, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Pressable, Dimensions } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { startMeasurement, stopMeasurement, incrementDuration } from '@/redux/measurementSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,7 +9,7 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const [measurementRunning, setMeasurementRunning] = useState<boolean>(false);
 
-  const [measurementData, setMeasurementData] = useState([{}]);
+  const [measurementData, setMeasurementData] = useState([{plant : "TestPlant", index: '2'}]);
 
   const dispatch = useDispatch();
 
@@ -25,7 +25,7 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
   };
 
   const fetchPlantData = (measurementId: number) => {
-    return fetch(`http://localhost:3000/plant/data/${measurementId}`)
+    return fetch(`https://agribot-backend-abck.onrender.com/plants/diseased/measurement/${measurementId}`)
       .then((response) => response.json())
       .catch((error) => console.error('Error fetching plant data:', error));
   };
@@ -150,6 +150,8 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
   );
 }
 
+const rootFont = Dimensions.get('window').fontScale;
+
 const styles = StyleSheet.create({
   card: { padding: 15, borderRadius: 8, marginVertical: 5 },
   fieldsCard: { backgroundColor: '#333333' },
@@ -163,14 +165,14 @@ const styles = StyleSheet.create({
   modalText: { color: '#ccc', textAlign: 'center' },
   closeButton: { marginTop: 20 },
   playButton: {
-    width : '3rem',
-    height: '3rem',
+    width : 48,
+    height: 48,
     borderRadius: 10,
     backgroundColor: '#4CAF50',
     display: 'flex',
     justifyContent: 'center',
     alignContent: 'center',
-    paddingLeft: '0.6rem'
+    paddingLeft: 8
   },
   title_buttonWrapper: {
     width: '100%',

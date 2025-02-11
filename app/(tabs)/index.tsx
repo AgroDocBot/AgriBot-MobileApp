@@ -8,6 +8,7 @@ import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { setAuthState } from '@/redux/authSlice';
 import { useSelector } from 'react-redux';
+import Home from '@/components/home/HomeScreen';
 
 export default function HomeScreen() {
 
@@ -16,6 +17,8 @@ export default function HomeScreen() {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const dispatch = useDispatch();
+
+  const [isLogged, setIsLogged] = useState<boolean>(false);
 
   const slideAnimHeader = useRef(new Animated.Value(-500)).current;
   const slideAnimForm = useRef(new Animated.Value(500)).current;
@@ -69,6 +72,7 @@ export default function HomeScreen() {
         } else {
           Alert.alert('Success', 'Logged in successfully!');
           console.log('Token:', data.accessToken);
+          setIsLogged(true);
           dispatch(setAuthState({ token: data.accessToken, user: data.user }));
           console.log("User: "+user);
         }
@@ -81,6 +85,8 @@ export default function HomeScreen() {
     }
   };
 
+  if(isLogged) return (<Home></Home>)
+  else 
   return (
     <ThemedView style={styles.container}>
       <View style={styles.headerContainer}>
