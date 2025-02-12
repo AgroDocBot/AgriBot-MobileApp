@@ -66,9 +66,6 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
               onMessage={handleWebViewMessage}
               style={styles.map}
             />
-            <TouchableOpacity style={styles.mapButton} onPress={sendLocationToWebView}>
-              <Text style={styles.mapButtonText}>Send Location</Text>
-            </TouchableOpacity>
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>

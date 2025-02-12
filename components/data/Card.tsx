@@ -135,10 +135,8 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
 
       <Modal visible={modalVisible} animationType="slide">
         <ScrollView contentContainerStyle={styles.modalContent}>
-          <Text>Measurement Details</Text>
-          {measurementData.map((plant : any, index : any) => (
-            <Text key={index}>{JSON.stringify(plant, null, 2)}</Text>
-          ))}
+          <Text style={styles.whiteText}>{activeTab} Details</Text>
+            <Text style={styles.whiteText}>{JSON.stringify(data)}</Text>
           <TouchableOpacity
             onPress={() => setModalVisible(false)}
             style={styles.closeButton}>
@@ -160,7 +158,7 @@ const styles = StyleSheet.create({
   cardTitle: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
   cardText: { color: '#ccc', marginTop: 5 },
   actionButtons: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
-  modalContent: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#222', padding: 20 },
+  modalContent: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#222', padding: 20, color: 'white' },
   modalTitle: { color: '#fff', fontSize: 22, marginBottom: 10 },
   modalText: { color: '#ccc', textAlign: 'center' },
   closeButton: { marginTop: 20 },
@@ -180,5 +178,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     //backgroundColor: 'red'
+  },
+  whiteText: {
+    color: 'white'
   }
 });

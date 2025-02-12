@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
+import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, Dimensions, ImageBackground } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import PlantImagesContainer from "./PlantImageContainer";
 
@@ -17,7 +17,7 @@ const Home = () => {
       <Text style={styles.title}>Welcome back</Text>
       <Text style={styles.subtitle}>AgriBot is waiting for you</Text>
       
-      <View style={styles.card}>
+      <ImageBackground source={require("@/assets/images/trianglify-lowres.png")} imageStyle={{ borderRadius: 16 }} style={styles.card}>
         <Image source={require("@/assets/images/robot.png")} style={styles.cardImage} />
         <View style={styles.cardInfo}>
           <Text style={styles.cardTitle}>AgriBot</Text>
@@ -25,7 +25,7 @@ const Home = () => {
           <Text style={styles.cardTemp}><Ionicons name="battery-full" size={36} color="white" /> 80%</Text>
           <Text style={styles.cardLight}>🔴 Disconnected</Text>
         </View>
-      </View>
+      </ImageBackground>
       
       <View style={styles.tabs}>
         <TouchableOpacity onPress={() => setActiveTab("Last plants")}>

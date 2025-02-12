@@ -31,3 +31,34 @@ v3.0 (Antennas Update) - Implemented support for long-range communication with 4
 antennas
 
 v4.0 (Design adjustments Update)
+
+
+
+
+List of Bugs:
+Login page:
+- Password field not visible when keyboard appears
+- Sign Up makes the fields appear squished a little
+
+Home page (still in dev)
+
+Connect page:
+- Missing loading screen while connecting (should probably be solved with blur view)
+
+Control page:
+- Unusable buttons still present
+
+Data page:
+A. Fields.
+- View Data Modal causes bugs
+- Editing not working
+
+B. Measurements.
+- View measurement data modal causes crashes
+- Editing not working
+
+C. Diseases
+- View Disease info causes crashes
+
+Account page:
+- Charts not sync with backend

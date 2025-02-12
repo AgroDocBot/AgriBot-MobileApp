@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions, ScrollView } from 'react-native';
 import Card from './Card';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AddFieldPopup from './AddFieldPopUp';
@@ -205,7 +205,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
       ));
 
   return (
-    <View style={styles.wrapper}>
+    <ScrollView style={styles.wrapper}>
       {filteredData.length ? (
         filteredData.map((item: any, index: number) => (
           <Card
@@ -265,7 +265,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
           userId={userId}
         />
       )}
-    </View>
+    </ScrollView>
   );
 }
 
