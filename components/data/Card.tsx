@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Pressable,
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { startMeasurement, stopMeasurement, incrementDuration } from '@/redux/measurementSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import CustomModal from './CustomModal';
 import i18n from '@/translations/i18n';
 
 export default function Card({ data, activeTab, onEdit, onRemove }: any) {
@@ -18,6 +19,8 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
   if(language === 'English') i18n.locale = 'en';
   else if(language === 'Български') i18n.locale = 'bg';
   else i18n.locale = 'de';
+
+  //console.log("Data passed to card:"+JSON.stringify(data))
 
   const openModal = () => {
     setModalVisible(true);
@@ -133,17 +136,12 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
         </TouchableOpacity>
       </View>
 
-      <Modal visible={modalVisible} animationType="slide">
-        <ScrollView contentContainerStyle={styles.modalContent}>
-          <Text style={styles.whiteText}>{activeTab} Details</Text>
-            <Text style={styles.whiteText}>{JSON.stringify(data)}</Text>
-          <TouchableOpacity
-            onPress={() => setModalVisible(false)}
-            style={styles.closeButton}>
-            <Ionicons name="close-outline" size={32} color="#fff" />
-          </TouchableOpacity>
-        </ScrollView>
-      </Modal>
+      <CustomModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        activeTab={activeTab}
+        data={data}
+      />
     </View>
   );
 }

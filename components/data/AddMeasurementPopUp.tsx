@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import {Picker} from '@react-native-picker/picker';
-import { PaperProvider, Modal } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker';
+import { PaperProvider } from 'react-native-paper';
+import { Modal } from 'react-native';
+import { Dimensions } from 'react-native';
 
 interface AddMeasurementPopupProps {
   visible: boolean;
@@ -46,28 +48,30 @@ export default function AddMeasurementPopup({
   if (!visible) return null;
 
   return (
-    <PaperProvider>
-      <Modal visible={visible} contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Add Measurement</Text>
-        <Picker
-          selectedValue={selectedField}
-          onValueChange={(itemValue : any) => setSelectedField(itemValue)}
-          style={styles.picker}>
-          <Picker.Item label="Select a Field" value="" />
-          {fields.map((field) => (
-            <Picker.Item key={field.id} label={field.fieldname} value={field.id} />
-          ))}
-        </Picker>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-            <Text style={styles.submitButtonText}>Submit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
+      <Modal visible={visible} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modal}>
+            <Text style={styles.title}>Add Measurement</Text>
+            <Picker
+              selectedValue={selectedField}
+              onValueChange={(itemValue : any) => setSelectedField(itemValue)}
+              style={styles.picker}>
+              <Picker.Item label="Select a Field" value=""/>
+              {fields.map((field) => (
+                <Picker.Item key={field.id} label={field.fieldname} value={field.id} />
+              ))}
+            </Picker>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+                <Text style={styles.submitButtonText}>Submit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </Modal>
-    </PaperProvider>
   );
 }
 
@@ -92,15 +96,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     borderRadius: 10,
     width: '100%',
-    padding: '1rem',
+    padding: 10,
     height: 200
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: 20,
     textAlign: 'center',
-    color: 'white'
   },
   picker: {
     height: 50,
@@ -142,5 +145,18 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: '#fff',
     fontSize: 16,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modal: {
+    width: Dimensions.get('window').width * 0.9,
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    elevation: 5,
   },
 });

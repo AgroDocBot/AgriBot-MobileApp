@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   wrapper: {
-    height: screenHeight * 0.75,
+    height: screenHeight * 0.75
   }
 });
 

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plant Measurement Map</title>
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+  <style>
+    body, html { margin: 0; padding: 0; height: 100%; }
+    #map { width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZGVyLWZ1aHJlciIsImEiOiJjbTZmYTJjZXMwM2JkMmtyNHYyaXAwenV1In0.5uZgStyGZUa7R3-q3JhniA';
+
+    // Create the map instance
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v12',
+      zoom: 17,  // High zoom level for better detail
+      center: [0, 0]  // Default center (updated dynamically)
+    });
+
+    let plantMarker, userMarker;
+    
+    // Function to set plant marker from React Native data
+    function setPlantMarker(lat, lng) {
+      if (plantMarker) plantMarker.remove();
+      plantMarker = new mapboxgl.Marker({ color: 'red' })
+        .setLngLat([lng, lat])
+        .addTo(map);
+      map.setCenter([lng, lat]);  // Center map on plant location
+    }
+
+    // Function to set or update user marker
+    function setUserMarker(lat, lng) {
+      if (userMarker) {
+        userMarker.setLngLat([lng, lat]); // Update position
+      } else {
+        userMarker = new mapboxgl.Marker({ color: 'blue' })
+          .setLngLat([lng, lat])
+          .addTo(map);
+      }
+    }
+
+    // Listen for messages from React Native
+    window.addEventListener('message', (event) => {
+      const { plantLat, plantLng, userLat, userLng } = event.data;
+      setPlantMarker(plantLat, plantLng);
+      setUserMarker(userLat, userLng);
+    });
+
+    // Function to track user's live location
+    function trackUserLocation() {
+      if ('geolocation' in navigator) {
+        navigator.geolocation.watchPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setUserMarker(latitude, longitude);
+          },
+          (error) => console.error('Geolocation error:', error),
+          { enableHighAccuracy: true }
+        );
+      } else {
+        console.error('Geolocation is not supported in this browser.');
+      }
+    }
+
+    trackUserLocation();  // Start tracking user location
+  </script>
+</body>
+</html>

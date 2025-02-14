@@ -1,28 +1,29 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Modal } from 'react-native';
 import { WebView } from 'react-native-webview';
 
 export default function AddFieldPopup({ visible, onClose, onSubmit, initialValues }: any) {
   const webViewRef = useRef(null);
 
-  const [fieldName, setFieldName] = React.useState(initialValues?.fieldName || '');
-  const [crop, setCrop] = React.useState(initialValues?.crop || '');
-  const [latitude, setLatitude] = React.useState(initialValues?.latitude || '');
-  const [longitude, setLongitude] = React.useState(initialValues?.longitude || '');
+  const [fieldName, setFieldName] = useState('');
+  const [crop, setCrop] = useState('');
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
+
+  useEffect(() => {
+    if (visible && initialValues) {
+      setFieldName(initialValues.fieldname || '');
+      setCrop(initialValues.crop || '');
+      setLatitude(initialValues.latitude?.toString() || '');
+      setLongitude(initialValues.longitude?.toString() || '');
+    }
+  }, [visible, initialValues]);
 
   const handleWebViewMessage = (event: any) => {
     const data = JSON.parse(event.nativeEvent.data);
     setLatitude(String(Math.round((Number(data.lat) + Number.EPSILON) * 100) / 100));
     setLongitude(String(Math.round((Number(data.lng) + Number.EPSILON) * 100) / 100));
     console.log("Received data from WV: "+JSON.stringify(data));
-  };
-
-  const sendLocationToWebView = () => {
-    const message = JSON.stringify({
-      latitude: parseFloat(latitude),
-      longitude: parseFloat(longitude),
-    });
-    webViewRef.current?.postMessage(message);
   };
 
   const handleSubmit = () => {
