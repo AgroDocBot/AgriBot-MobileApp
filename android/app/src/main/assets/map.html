@@ -32,10 +32,26 @@
       zoom: 2,      
     });
 
+    let marker; // Store marker reference
+
+    // Function to set initial marker
+    window.setInitialMarker = (lng, lat) => {
+      if (marker) marker.remove(); // Remove old marker if it exists
+
+      marker = new mapboxgl.Marker()
+        .setLngLat([lng, lat])
+        .addTo(map);
+
+      map.flyTo({ center: [lng, lat], zoom: 12 });
+    };
+
     map.on('click', (event) => {
       const { lng, lat } = event.lngLat;
 
       // Add a marker to the clicked position
+
+      if (marker) marker.remove();
+      
       new mapboxgl.Marker()
         .setLngLat([lng, lat])
         .addTo(map);

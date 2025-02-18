@@ -2,13 +2,15 @@ import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Modal } from 'react-native';
 import { WebView } from 'react-native-webview';
 
-export default function AddFieldPopup({ visible, onClose, onSubmit, initialValues }: any) {
+export default function AddFieldPopup({ visible, onClose, onSubmit, initialValues, mode }: any) {
   const webViewRef = useRef(null);
 
   const [fieldName, setFieldName] = useState('');
   const [crop, setCrop] = useState('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
+
+  let script = '';
 
   useEffect(() => {
     if (visible && initialValues) {
@@ -17,6 +19,14 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
       setLatitude(initialValues.latitude?.toString() || '');
       setLongitude(initialValues.longitude?.toString() || '');
     }
+
+    if (webViewRef.current && initialValues.latitude && initialValues.longitude) {
+      script = `
+        window.setInitialMarker(${initialValues.longitude}, ${initialValues.latitude});
+      `;
+      //webViewRef.current.injectJavascript(script);
+    }
+
   }, [visible, initialValues]);
 
   const handleWebViewMessage = (event: any) => {
@@ -41,11 +51,13 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
 
   if (!visible) return null;
 
+  console.log('Script: '+script);
+
   return (
     <Modal visible={visible} animationType="slide" transparent>
       <View style={styles.modalContainer}>
         <View style={styles.modal}>
-          <Text style={styles.title}>Add New Field</Text>
+          <Text style={styles.title}>{mode === 'add' ? "Add New" : "Edit"} Field</Text>
           <TextInput
             style={styles.input}
             placeholder="Field Name"
@@ -66,6 +78,7 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
               source={{ uri: 'file:///android_asset/map.html' }}
               onMessage={handleWebViewMessage}
               style={styles.map}
+              injectedJavaScript={`window.setInitialMarker(${longitude}, ${latitude});`}
             />
           </View>
           <View style={styles.buttonContainer}>

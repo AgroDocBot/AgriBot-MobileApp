@@ -10,6 +10,8 @@ interface AddMeasurementPopupProps {
   onClose: () => void;
   onSubmit: (measurementData: any) => void;
   userId: number;
+  initialField: any,
+  mode: "add" | "edit"
 }
 
 
@@ -18,9 +20,12 @@ export default function AddMeasurementPopup({
   onClose,
   onSubmit,
   userId,
+  initialField,
+  mode
 }: AddMeasurementPopupProps) {
+  
   const [fields, setFields] = useState<any[]>([]);
-  const [selectedField, setSelectedField] = useState('');
+  const [selectedField, setSelectedField] = useState("");
 
   useEffect(() => {
     if (userId) {

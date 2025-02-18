@@ -99,6 +99,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log("Returned response: "+JSON.stringify(data));
         setFields((prev) =>
           prev.map((field) =>
             field.fieldname === fieldData.fieldName ? data : field
@@ -254,6 +255,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
           onClose={() => setPopupVisible(false)}
           onSubmit={popupMode === 'add' ? handleAdd : handleEdit}
           initialValues={editData}
+          mode={popupMode}
         />
       )}
 
@@ -263,6 +265,8 @@ export default function CardList({ activeTab, searchQuery }: any) {
           onClose={() => setPopupVisible(false)}
           onSubmit={popupMode === 'add' ? handleAddMeasurement : handleEditMeasurement}
           userId={userId}
+          initialField={editData}
+          mode={popupMode}
         />
       )}
     </ScrollView>
