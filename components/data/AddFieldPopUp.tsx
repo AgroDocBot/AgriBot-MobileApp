@@ -5,22 +5,34 @@ import { WebView } from 'react-native-webview';
 export default function AddFieldPopup({ visible, onClose, onSubmit, initialValues, mode }: any) {
   const webViewRef = useRef(null);
 
-  const [fieldName, setFieldName] = useState('');
-  const [crop, setCrop] = useState('');
+  const [id, setId] = useState<number | null>(null);
+  const [fieldName, setFieldName] = useState<string>('');
+  const [crop, setCrop] = useState<string>('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
 
   let script = '';
 
   useEffect(() => {
-    if (visible && initialValues) {
-      setFieldName(initialValues.fieldname || '');
-      setCrop(initialValues.crop || '');
-      setLatitude(initialValues.latitude?.toString() || '');
-      setLongitude(initialValues.longitude?.toString() || '');
+    if (visible) {
+      if (mode === "add") {
+        // resets fields for a new entry
+        setId(null);
+        setFieldName('');
+        setCrop('');
+        setLatitude('');
+        setLongitude('');
+      } else if (initialValues) {
+        // populating fields when editing
+        setId(initialValues.id || null)
+        setFieldName(initialValues.fieldname || '');
+        setCrop(initialValues.crop || '');
+        setLatitude(initialValues.latitude?.toString() || '');
+        setLongitude(initialValues.longitude?.toString() || '');
+      }
     }
 
-    if (webViewRef.current && initialValues.latitude && initialValues.longitude) {
+    if (webViewRef.current && initialValues && mode !== "add") {
       script = `
         window.setInitialMarker(${initialValues.longitude}, ${initialValues.latitude});
       `;
@@ -45,7 +57,7 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
       return;
     }
 
-    onSubmit({ fieldName, crop, location: { latitude: parsedLatitude, longitude: parsedLongitude } });
+    onSubmit({ id: id, fieldName : fieldName, crop : crop, location: { latitude: parsedLatitude, longitude: parsedLongitude } });
     onClose();
   };
 
@@ -73,13 +85,22 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
             onChangeText={setCrop}
           />
           <View style={styles.mapContainer}>
-            <WebView
+            {mode !== "add" ? 
+              <WebView
+                ref={webViewRef}
+                source={{ uri: 'file:///android_asset/map.html' }}
+                onMessage={handleWebViewMessage}
+                style={styles.map}
+                injectedJavaScript={`window.setInitialMarker(${longitude}, ${latitude});`}
+              />
+              :
+              <WebView
               ref={webViewRef}
               source={{ uri: 'file:///android_asset/map.html' }}
               onMessage={handleWebViewMessage}
               style={styles.map}
-              injectedJavaScript={`window.setInitialMarker(${longitude}, ${latitude});`}
             />
+            }
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>

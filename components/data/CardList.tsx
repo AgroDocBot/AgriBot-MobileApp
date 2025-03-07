@@ -15,6 +15,8 @@ export default function CardList({ activeTab, searchQuery }: any) {
   const [diseases, setDiseases] = useState<any[]>([]);
   const [editData, setEditData] = useState<any>(null);
 
+  const [currentMeasurementField, setCurrentMeasurementField] = useState<any>(null);
+
   const userId = useSelector((state: any) => state.auth.user?.id);
   const user = useSelector((state: any) => state.auth.user);
   const username = useSelector((state: any) => state.auth.user?.username);
@@ -90,6 +92,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
         'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
       },
       body: JSON.stringify({
+        id: fieldData.id,
         fieldname: fieldData.fieldName,
         crop: fieldData.crop,
         latitude: fieldData.location.latitude,
@@ -102,7 +105,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
         console.log("Returned response: "+JSON.stringify(data));
         setFields((prev) =>
           prev.map((field) =>
-            field.fieldname === fieldData.fieldName ? data : field
+            field.id === fieldData.id ? data : field
           )
         );
         setPopupVisible(false);
@@ -118,13 +121,12 @@ export default function CardList({ activeTab, searchQuery }: any) {
         'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
       },
       body: JSON.stringify({
-        fieldname: fieldData.fieldname,
-        userId: user.id,
+        id: fieldData.id
       }),
     })
       .then(() => {
         setFields((prev) =>
-          prev.filter((field) => field.fieldname !== fieldData.fieldname)
+          prev.filter((field) => field.id !== fieldData.id)
         );
       })
       .catch((error) => console.error('Error deleting field:', error));
@@ -213,12 +215,14 @@ export default function CardList({ activeTab, searchQuery }: any) {
             key={index}
             data={item}
             activeTab={activeTab}
-            onEdit={(data: any) => {
+            onEdit={(data: any, currentField : any) => {
               setEditData(data);
               setPopupMode('edit');
               setPopupVisible(true);
+              setCurrentMeasurementField(currentField);
             }}
             onRemove={activeTab === 'measurements' ? handleDeleteMeasurement : handleDelete}
+            fields={fields}
           />
         ))
       ) : (
@@ -267,6 +271,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
           userId={userId}
           initialField={editData}
           mode={popupMode}
+          currentField={currentMeasurementField}
         />
       )}
     </ScrollView>

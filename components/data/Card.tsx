@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import CustomModal from './CustomModal';
 import i18n from '@/translations/i18n';
 
-export default function Card({ data, activeTab, onEdit, onRemove }: any) {
+export default function Card({ data, activeTab, onEdit, onRemove, fields }: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const [measurementRunning, setMeasurementRunning] = useState<boolean>(false);
 
@@ -87,7 +87,7 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
         return (
           <>
             <View style={styles.title_buttonWrapper}>
-              <Text style={styles.cardTitle}>{data.fieldId}</Text>
+              <Text style={styles.cardTitle}>{fields.find(field => field.id === data.fieldId).fieldname}</Text>
               <TouchableOpacity onPress={() => {toggleMeasurement()}} style={styles.playButton}>
                 <Ionicons name={measurementRunning ? 'pause' : 'play'} size={30} color="#fff" />
               </TouchableOpacity>
@@ -128,7 +128,7 @@ export default function Card({ data, activeTab, onEdit, onRemove }: any) {
     <View style={[styles.card, styles[`${activeTab}Card`]]}>
       <TouchableOpacity onPress={() => openModal()}>{renderContent()}</TouchableOpacity>
       <View style={styles.actionButtons}>
-        <TouchableOpacity onPress={() => onEdit(data)}>
+        <TouchableOpacity onPress={() => onEdit(data, fields.find(field => field.id === data.fieldId))}>
           <Ionicons name="create-outline" size={24} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => onRemove(data)}>
