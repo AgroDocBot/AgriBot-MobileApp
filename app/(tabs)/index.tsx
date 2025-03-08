@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { setAuthState } from '@/redux/authSlice';
 import { useSelector } from 'react-redux';
 import Home from '@/components/home/HomeScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen() {
 
@@ -45,8 +46,28 @@ export default function HomeScreen() {
       easing: Easing.linear,
       useNativeDriver: false,
     }).start();
-  }, []);
+  }, [user]);
 
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem('authToken');
+        const storedUser = await AsyncStorage.getItem('user');
+  
+        if (token && storedUser) {
+          const user = JSON.parse(storedUser);
+          
+          dispatch(setAuthState({ token, user })); // Update Redux state
+          setIsLogged(true);
+        }
+      } catch (error) {
+        console.error('Error retrieving auth token:', error);
+      }
+    };
+  
+    checkAuthStatus();
+  }, []);
+  
   const handleSubmit = async () => {
     const url = isSignup
       ? 'https://agribot-backend-abck.onrender.com/auth/register'
@@ -72,7 +93,12 @@ export default function HomeScreen() {
         } else {
           Alert.alert('Success', 'Logged in successfully!');
           console.log('Token:', data.accessToken);
+
+          await AsyncStorage.setItem('authToken', data.accessToken);
+          await AsyncStorage.setItem('user', JSON.stringify(data.user));
+
           setIsLogged(true);
+
           dispatch(setAuthState({ token: data.accessToken, user: data.user }));
           console.log("User: "+user);
         }
@@ -85,7 +111,7 @@ export default function HomeScreen() {
     }
   };
 
-  if(isLogged) return (<Home></Home>)
+  if(user) return (<Home></Home>)
   else 
   return (
     <ThemedView style={styles.container}>

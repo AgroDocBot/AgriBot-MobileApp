@@ -29,5 +29,27 @@
       "fields": "fields",
       "measurements": "measurements",
       "diseases": "diseases"
+    },
+    "fields": {
+      "crops": "Crops",
+      "location": "Location"
+    },
+    "add_edit_popup": {
+      "submit": "Submit",
+      "close": "Close",
+      "add": "Add",
+      "edit": "Edit",
+      "field": "Field",
+      "measurement": "Measurement"
+    },
+    "connect": {
+      "not_connected": "Oops, it seems you are not connected!",
+      "connect": "Connect"
+    },
+    "home": {
+      "welcome": "Welcome back",
+      "waiting": "AgriBot is waiting for you",
+      "last": "Last Plants",
+      "urgent": "Urgent Plants"
     }
   }

@@ -1,14 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
+import { useSelector } from 'react-redux';
 
 export const AccountHeader = ({ userPhoto }: { userPhoto?: string }) => {
+
+  const user = useSelector((state: any) => state.auth.user);
 
   return (
     <View style={styles.headerContainer}>
       <Image source={ require('../../assets/images/account_profile_user_avatar_icon_219236.png') } style={styles.avatar} />
       <View style={styles.titleContainer}>
-        <Text style={styles.userName}>Name Surname</Text>
-        <Text style={styles.userRole}>Guest</Text>
+        <Text style={styles.userName}>{user ? user.username : "Name Surname"}</Text>
+        <Text style={styles.userRole}>{user ? "User" : "Guest"}</Text>
       </View>
     </View>
   );
