@@ -11,6 +11,8 @@ import WifiManager from "react-native-wifi-reborn";
 import { ConnectToProtectedSSIDParams } from 'react-native-wifi-reborn';
 import { NativeModules } from 'react-native';
 import { Alert } from 'react-native';
+import i18n from '@/translations/i18n';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface ConnectScreenProps {
   setConnectedState : Function
@@ -19,6 +21,14 @@ interface ConnectScreenProps {
 export function ConnectScreen({setConnectedState} : ConnectScreenProps) {
   
   const theme = useColorScheme() ?? 'dark';
+
+  const dispatch = useDispatch();
+
+  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+
+  if(language === 'English') i18n.locale = 'en';
+  else if(language === 'Български') i18n.locale = 'bg';
+  else i18n.locale = 'de';
 
   const { NetworkManager } = NativeModules;
 
@@ -68,11 +78,11 @@ export function ConnectScreen({setConnectedState} : ConnectScreenProps) {
   return (
     <ThemedView style={styles.main}>
       <ThemedView style={styles.container}>
-      <Text style={styles.connect_text}>Oops, it seems you are not connected!</Text>
+      <Text style={styles.connect_text}>{i18n.t("connect.not_connected")}</Text>
         <Pressable style={styles.connect_btn} onPress={connectToBot}>
           <TabBarIcon name={'wifi'} color={"white"} size={60}/>     
         </Pressable>
-        <Text style={styles.connect_text}>Connect</Text>
+        <Text style={styles.connect_text}>{i18n.t("connect.connect")}</Text>
       </ThemedView>
     </ThemedView>
   );

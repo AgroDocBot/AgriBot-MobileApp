@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Modal } from 'react-native';
 import { WebView } from 'react-native-webview';
+import i18n from '@/translations/i18n';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function AddFieldPopup({ visible, onClose, onSubmit, initialValues, mode }: any) {
   const webViewRef = useRef(null);
@@ -10,6 +12,14 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
   const [crop, setCrop] = useState<string>('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
+
+  const dispatch = useDispatch();
+
+  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+
+  if(language === 'English') i18n.locale = 'en';
+  else if(language === 'Български') i18n.locale = 'bg';
+  else i18n.locale = 'de';
 
   let script = '';
 
@@ -69,10 +79,10 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
     <Modal visible={visible} animationType="slide" transparent>
       <View style={styles.modalContainer}>
         <View style={styles.modal}>
-          <Text style={styles.title}>{mode === 'add' ? "Add New" : "Edit"} Field</Text>
+          <Text style={styles.title}>{mode === 'add' ? i18n.t('add_edit_popup.add') : i18n.t('add_edit_popup.edit')} {i18n.t('add_edit_popup.field')}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Field Name"
+            placeholder={i18n.t('add_edit_popup.fieldName')}
             placeholderTextColor="#888"
             value={fieldName}
             onChangeText={setFieldName}
@@ -80,7 +90,7 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
           />
           <TextInput
             style={styles.input}
-            placeholder="Crop Type"
+            placeholder={i18n.t('add_edit_popup.cropType')}
             placeholderTextColor="#888"
             value={crop}
             onChangeText={setCrop}
@@ -106,10 +116,10 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>Submit</Text>
+              <Text style={styles.buttonText}>{i18n.t('add_edit_popup.submit')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={onClose}>
-              <Text style={styles.buttonText}>Cancel</Text>
+              <Text style={styles.buttonText}>{i18n.t('add_edit_popup.close')}</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -1,0 +1,66 @@
+{
+    "settings": {
+      "general": "Allgemeine Einstellungen",
+      "language": "Sprache",
+      "controlStyle": "Steuerstil",
+      "units": "Maßeinheiten",
+      "metric": "Metrische",
+      "imperial": "Imperialische",
+      "keypad": "Tastatur",
+      "wheel": "Rad"
+    },
+    "stats" : {
+      "appStats": "App Statistik",
+      "hours": "Dauer des Robotsteuers (Stunden)",
+      "fieldCoverage": "Feldbedeckung",
+      "measurementRates": "Erfolgsrate der Messungen"
+    },
+    "personal": {
+      "personalSettings": "Personaleinstellungen",
+      "changePassword": "Passwortverwechslung",
+      "logout": "Abmeldung",
+      "newPassword": "Neues Passwort",
+      "confirmNewPassword": "Neues Passwort bestätigen",
+      "updatePassword": "Password verändern"
+    },
+    "measurements": {
+      "date": "Datum",
+      "duration": "Dauer",
+      "percent": "Percent"
+    },
+    "menu": {
+      "fields": "felder",
+      "measurements": "messungen",
+      "diseases": "krankheiten",
+      "search": "Suchen Sie nach..."
+    },
+    "fields": {
+      "crops": "Feldfruchten",
+      "location": "Location",
+      "plant": "Pflanzart"
+    },
+    "add_edit_popup": {
+      "submit": "Speichern",
+      "close": "Abbrechen",
+      "add": "Hinzufügung ein neues",
+      "edit": "Bearbeitung des",
+      "field": "Feldes",
+      "measurement": "Messung",
+      "fieldName": "Feldname",
+      "cropType": "Feldfrucht",
+      "selectField": "Wählen Sie bitte ein Feld"
+    },
+    "connect": {
+      "not_connected": "Oops, es scheint sich aus, als ob Sie nicht verbunden sind!",
+      "connect": "Verbinden"
+    },
+    "home": {
+      "welcome": "Herzlichen Wilkommen",
+      "waiting": "AgriBot wartet auf Ihnen",
+      "last": "Letzte Pflanzen",
+      "urgent": "Urgent Pflanzen",
+      "lastUsed": "Letzt benutzt vor",
+      "daysAgo": "Tagen",
+      "disconnected": "Unverbindet"
+    }
+  }

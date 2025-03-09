@@ -31,7 +31,37 @@
     "menu": {
       "fields": "полета",
       "measurements": "измервания",
-      "diseases": "болести"
+      "diseases": "болести",
+      "search": "Търсене..."
+    },
+    "fields": {
+      "crops": "Култури",
+      "location": "Местоположение",
+      "plant": "Растение"
+    },
+    "add_edit_popup": {
+      "submit": "Запазване",
+      "close": "Отказ",
+      "add": "Добавяне на ново",
+      "edit": "Редактиране на",
+      "field": "поле",
+      "measurement": "измерване",
+      "fieldName": "Име на полето",
+      "cropType": "Отглеждана култура",
+      "selectField": "Изберете поле"
+    },
+    "connect": {
+      "not_connected": "Опа, изглежда, че не сте свързани!",
+      "connect": "Свързване"
+    },
+    "home": {
+      "welcome": "Добре дошли отново",
+      "waiting": "AgriBot Ви очаква",
+      "last": "Последно снимани",
+      "urgent": "Спешни",
+      "lastUsed": "Последно използван преди",
+      "daysAgo": "дни",
+      "disconnected": "Несвързан"
     }
   }
   

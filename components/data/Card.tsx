@@ -76,10 +76,10 @@ export default function Card({ data, activeTab, onEdit, onRemove, fields }: any)
           <>
             <Text style={styles.cardTitle}>{data.fieldname}</Text>
             <Text style={styles.cardText}>
-              <Ionicons name="leaf-outline" size={16} color="#fff" /> Crops: {data.crop}
+              <Ionicons name="leaf-outline" size={16} color="#fff" /> {i18n.t('fields.crops')}: {data.crop}
             </Text>
             <Text style={styles.cardText}>
-              <Ionicons name="location-outline" size={16} color="#fff" /> Location: {data.latitude}, {data.longitude}
+              <Ionicons name="location-outline" size={16} color="#fff" /> {i18n.t('fields.location')}: {data.latitude}, {data.longitude}
             </Text>
           </>
         );
@@ -109,7 +109,7 @@ export default function Card({ data, activeTab, onEdit, onRemove, fields }: any)
           <>
             <Text style={styles.cardTitle}>{data.diseaseName}</Text>
             <Text style={styles.cardText}>
-              <Ionicons name="flower-outline" size={16} color="#fff" /> Plant: {data.affectedPlants}
+              <Ionicons name="flower-outline" size={16} color="#fff" /> {i18n.t('fields.plant')}: {data.affectedPlants}
             </Text>
             <Text style={styles.cardText}>
               <Ionicons

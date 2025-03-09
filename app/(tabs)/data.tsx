@@ -2,17 +2,27 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Dimensions, Text, TextInput, ScrollView } from 'react-native';
 import Menu from '@/components/data/Menu';
 import CardList from '@/components/data/CardList';
+import i18n from '@/translations/i18n';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function DataScreen() {
   const [activeTab, setActiveTab] = useState('fields');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const dispatch = useDispatch();
+
+  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+
+  if(language === 'English') i18n.locale = 'en';
+  else if(language === 'Български') i18n.locale = 'bg';
+  else i18n.locale = 'de';
 
   return (
     <View style={styles.main}>
       <Menu activeTab={activeTab} setActiveTab={setActiveTab} />
       <TextInput
         style={styles.searchBar}
-        placeholder="Search..."
+        placeholder={i18n.t("menu.search")}
         placeholderTextColor="#ccc"
         value={searchQuery}
         onChangeText={setSearchQuery}

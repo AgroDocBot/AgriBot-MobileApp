@@ -31,19 +31,24 @@
     "menu": {
       "fields": "fields",
       "measurements": "measurements",
-      "diseases": "diseases"
+      "diseases": "diseases",
+      "search": "Search..."
     },
     "fields": {
       "crops": "Crops",
-      "location": "Location"
+      "location": "Location",
+      "plant": "Plant"
     },
     "add_edit_popup": {
       "submit": "Submit",
       "close": "Close",
-      "add": "Add",
+      "add": "Add new",
       "edit": "Edit",
       "field": "Field",
-      "measurement": "Measurement"
+      "measurement": "Measurement",
+      "fieldName": "Field name",
+      "cropType": "Crop Type",
+      "selectField": "Select a Field"
     },
     "connect": {
       "not_connected": "Oops, it seems you are not connected!",
@@ -53,6 +58,9 @@
       "welcome": "Welcome back",
       "waiting": "AgriBot is waiting for you",
       "last": "Last Plants",
-      "urgent": "Urgent Plants"
+      "urgent": "Urgent Plants",
+      "lastUsed": "Last used",
+      "daysAgo": "days ago",
+      "disconnected": "Disconnected"
     }
   }

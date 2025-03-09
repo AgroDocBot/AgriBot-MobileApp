@@ -2,9 +2,20 @@ import React, { useState } from "react";
 import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, Dimensions, ImageBackground } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import PlantImagesContainer from "./PlantImageContainer";
+import i18n from '@/translations/i18n';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState("Last plants");
+
+  const dispatch = useDispatch();
+
+  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+
+  if(language === 'English') i18n.locale = 'en';
+  else if(language === 'Български') i18n.locale = 'bg';
+  else i18n.locale = 'de';
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -14,25 +25,25 @@ const Home = () => {
           <Ionicons name="cloud-outline" size={24} color="white" />
         </View>
       </View>
-      <Text style={styles.title}>Welcome back</Text>
-      <Text style={styles.subtitle}>AgriBot is waiting for you</Text>
+      <Text style={styles.title}>{i18n.t("home.welcome")}</Text>
+      <Text style={styles.subtitle}>{i18n.t("home.waiting")}</Text>
       
       <ImageBackground source={require("@/assets/images/trianglify-lowres.png")} imageStyle={{ borderRadius: 16 }} style={styles.card}>
         <Image source={require("@/assets/images/robot.png")} style={styles.cardImage} />
         <View style={styles.cardInfo}>
           <Text style={styles.cardTitle}>AgriBot</Text>
-          <Text style={styles.cardSubtitle}>Last used: 12 days ago</Text>
+          <Text style={styles.cardSubtitle}>{i18n.t("home.lastUsed")}: 12 {i18n.t("home.daysAgo")}</Text>
           <Text style={styles.cardTemp}><Ionicons name="battery-full" size={36} color="white" /> 80%</Text>
-          <Text style={styles.cardLight}>🔴 Disconnected</Text>
+          <Text style={styles.cardLight}>🔴 {i18n.t("home.disconnected")}</Text>
         </View>
       </ImageBackground>
       
       <View style={styles.tabs}>
         <TouchableOpacity onPress={() => setActiveTab("Last plants")}>
-          <Text style={activeTab === "Last plants" ? styles.activeTab : styles.inactiveTab}>Last plants</Text>
+          <Text style={activeTab === "Last plants" ? styles.activeTab : styles.inactiveTab}>{i18n.t("home.last")}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setActiveTab("Urgent plants")}>
-          <Text style={activeTab === "Urgent plants" ? styles.activeTab : styles.inactiveTab}>Urgent plants</Text>
+          <Text style={activeTab === "Urgent plants" ? styles.activeTab : styles.inactiveTab}>{i18n.t("home.urgent")}</Text>
         </TouchableOpacity>
       </View>
       

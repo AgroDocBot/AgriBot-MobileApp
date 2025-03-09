@@ -4,6 +4,8 @@ import { Picker } from '@react-native-picker/picker';
 import { PaperProvider } from 'react-native-paper';
 import { Modal } from 'react-native';
 import { Dimensions } from 'react-native';
+import i18n from '@/translations/i18n';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface AddMeasurementPopupProps {
   visible: boolean;
@@ -28,6 +30,14 @@ export default function AddMeasurementPopup({
   
   const [fields, setFields] = useState<any[]>([]);
   const [selectedField, setSelectedField] = useState();
+
+  const dispatch = useDispatch();
+
+  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+
+  if(language === 'English') i18n.locale = 'en';
+  else if(language === 'Български') i18n.locale = 'bg';
+  else i18n.locale = 'de';
 
   useEffect(() => {
     if (userId) {
@@ -58,22 +68,22 @@ export default function AddMeasurementPopup({
       <Modal visible={visible} animationType="slide" transparent>
         <View style={styles.modalContainer}>
           <View style={styles.modal}>
-            <Text style={styles.title}>Add Measurement</Text>
+            <Text style={styles.title}>{mode === 'add' ? i18n.t('add_edit_popup.add') : i18n.t('add_edit_popup.edit')} {i18n.t('add_edit_popup.measurement')}</Text>
             <Picker
               selectedValue={selectedField}
               onValueChange={(itemValue : any) => setSelectedField(itemValue)}
               style={styles.picker}>
-              <Picker.Item label="Select a Field" value=""/>
+              <Picker.Item label={i18n.t('add_edit_popup.selectField')} value=""/>
               {fields.map((field) => (
                 <Picker.Item key={field.id} label={field.fieldname} value={field.id} />
               ))}
             </Picker>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                <Text style={styles.submitButtonText}>Submit</Text>
+                <Text style={styles.submitButtonText}>{i18n.t('add_edit_popup.submit')}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <Text style={styles.closeButtonText}>Close</Text>
+                <Text style={styles.closeButtonText}>{i18n.t('add_edit_popup.close')}</Text>
               </TouchableOpacity>
             </View>
           </View>
