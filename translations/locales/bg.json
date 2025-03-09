@@ -17,8 +17,11 @@
     },
     "personal": {
       "personalSettings": "Настройки на профила",
-      "changePassword": "Промени паролата си",
-      "logout": "Изход"
+      "changePassword": "Промяна на паролата",
+      "logout": "Изход",
+      "newPassword": "Нова парола",
+      "confirmNewPassword": "Потвърждение на новата парола",
+      "updatePassword": "Променяне на паролата"
     },
     "measurements": {
       "date": "Дата",

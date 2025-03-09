@@ -18,7 +18,10 @@
     "personal": {
       "personalSettings": "Personal Settings",
       "changePassword": "Change Password",
-      "logout": "Log out"
+      "logout": "Log out",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "updatePassword": "Update Password"
     },
     "measurements": {
       "date": "Date",

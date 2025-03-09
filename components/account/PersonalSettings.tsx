@@ -91,6 +91,7 @@ export const PersonalSettings = () => {
             secureTextEntry
             value={newPassword}
             onChangeText={setNewPassword}
+            keyboardType="default"
           />
           <TextInput
             style={styles.input}
@@ -99,6 +100,7 @@ export const PersonalSettings = () => {
             secureTextEntry
             value={confirmPassword}
             onChangeText={setConfirmPassword}
+            keyboardType="default"
           />
           <TouchableOpacity style={styles.updateButton} onPress={handleUpdatePassword}>
             <Text style={styles.updateButtonText}>{i18n.t('personal.updatePassword')}</Text>

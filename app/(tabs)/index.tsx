@@ -14,9 +14,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function HomeScreen() {
 
   const [isSignup, setIsSignup] = useState(false); 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const dispatch = useDispatch();
 
   const [isLogged, setIsLogged] = useState<boolean>(false);
@@ -137,6 +137,7 @@ export default function HomeScreen() {
           placeholderTextColor="#888"
           value={username}
           onChangeText={setUsername}
+          keyboardType="default"
         />
         {isSignup && (
           <TextInput
@@ -145,6 +146,7 @@ export default function HomeScreen() {
             placeholderTextColor="#888"
             value={email}
             onChangeText={setEmail}
+            keyboardType="default"
           />
         )}
         <TextInput
@@ -154,6 +156,7 @@ export default function HomeScreen() {
           secureTextEntry
           value={password}
           onChangeText={setPassword}
+          keyboardType="default"
         />
         <Pressable style={styles.login_btn} onPress={handleSubmit}>
           <Text style={styles.btn_text}>{isSignup ? 'Sign Up' : 'Login'}</Text>

@@ -5,7 +5,7 @@ import CardList from '@/components/data/CardList';
 
 export default function DataScreen() {
   const [activeTab, setActiveTab] = useState('fields');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   return (
     <View style={styles.main}>
@@ -16,6 +16,7 @@ export default function DataScreen() {
         placeholderTextColor="#ccc"
         value={searchQuery}
         onChangeText={setSearchQuery}
+        keyboardType="default"
       />
       <ScrollView>
         <CardList activeTab={activeTab} searchQuery={searchQuery} />

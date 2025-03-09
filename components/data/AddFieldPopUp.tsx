@@ -76,6 +76,7 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
             placeholderTextColor="#888"
             value={fieldName}
             onChangeText={setFieldName}
+            keyboardType="default"
           />
           <TextInput
             style={styles.input}
@@ -83,6 +84,7 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
             placeholderTextColor="#888"
             value={crop}
             onChangeText={setCrop}
+            keyboardType="default"
           />
           <View style={styles.mapContainer}>
             {mode !== "add" ? 
