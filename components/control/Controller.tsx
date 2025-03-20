@@ -111,13 +111,13 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
           console.log("Current plant id"+curPlantId);
 
           // Update the image using PUT request with the received URL
-          const updateResponse = await fetch(`https://agribot-backend-abck.onrender.com/${plantState}/edit`, {
+          const updateResponse = await fetch(`https://agribot-backend-abck.onrender.com/plants/${plantState}/edit`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              plantId: curPlantId,
+              id: curPlantId,
               imageUrl: uploadedImageUrl,
             }),
           });
