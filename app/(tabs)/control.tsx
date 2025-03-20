@@ -10,11 +10,14 @@ import { useState } from 'react';
 import { ConnectScreen } from '@/components/control/ConnectToDevice';
 import RobotControl from '@/components/control/Controller';
 import { Dimensions } from 'react-native';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 export default function TabControl() {
 
   const [isConnectedToBot, setConnectedToBot] = useState(false);
-
+  //const measurementId = useSelector((state: RootState) => state.measurementnew.measurementId);
+  
   function setSetConnectedToBot() { 
     setConnectedToBot(true);
   }
@@ -25,7 +28,7 @@ export default function TabControl() {
       {!isConnectedToBot ? 
         <ConnectScreen setConnectedState={setSetConnectedToBot}/>
         :
-        <RobotControl key={isConnectedToBot ? "connected" : "disconnected"} isConnected={isConnectedToBot} />
+        <RobotControl key={isConnectedToBot ? "connected" : "disconnected"} isConnected={isConnectedToBot}/>
       }
     </ThemedView>
   );

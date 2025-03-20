@@ -4,17 +4,28 @@ import { Ionicons } from "@expo/vector-icons";
 import PlantImagesContainer from "./PlantImageContainer";
 import i18n from '@/translations/i18n';
 import { useDispatch, useSelector } from 'react-redux';
+import { createOrUpdateRobotData, updateUsage, updateBattery, setBatteryStatus } from '@/redux/batteryUsageSlice';
+import { useEffect } from "react";
+import { RootState } from "@/redux/store";
+import type { AppDispatch } from '@/redux/store';
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState("Last plants");
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
 
   if(language === 'English') i18n.locale = 'en';
   else if(language === 'Български') i18n.locale = 'bg';
   else i18n.locale = 'de';
+
+  const user = useSelector((state: RootState) => state.auth.user);
+  const battery = useSelector((state: RootState) => state.battery.battery);
+
+  useEffect(() => {
+    if(user?.id) dispatch(createOrUpdateRobotData(user?.id));
+  }, [user, dispatch]);
 
   return (
     <ScrollView style={styles.container}>
@@ -33,7 +44,7 @@ const Home = () => {
         <View style={styles.cardInfo}>
           <Text style={styles.cardTitle}>AgriBot</Text>
           <Text style={styles.cardSubtitle}>{i18n.t("home.lastUsed")}: 12 {i18n.t("home.daysAgo")}</Text>
-          <Text style={styles.cardTemp}><Ionicons name="battery-full" size={36} color="white" /> 80%</Text>
+          <Text style={styles.cardTemp}><Ionicons name="battery-full" size={36} color="white" /> {battery}</Text>
           <Text style={styles.cardLight}>🔴 {i18n.t("home.disconnected")}</Text>
         </View>
       </ImageBackground>

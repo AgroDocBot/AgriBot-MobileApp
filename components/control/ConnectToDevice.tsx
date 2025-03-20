@@ -1,4 +1,4 @@
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, TouchableOpacity, useColorScheme } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { ThemedText } from '@/components/ThemedText';
@@ -23,6 +23,7 @@ export function ConnectScreen({setConnectedState} : ConnectScreenProps) {
   const theme = useColorScheme() ?? 'dark';
 
   const dispatch = useDispatch();
+  const [failedBindingCount, setFailedBindingCount] = useState<number>(0);
 
   const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
 
@@ -31,6 +32,13 @@ export function ConnectScreen({setConnectedState} : ConnectScreenProps) {
   else i18n.locale = 'de';
 
   const { NetworkManager } = NativeModules;
+
+  useEffect(() => {
+    console.log(failedBindingCount);
+    if(failedBindingCount > 0) {
+      connectToBot();
+    }
+  }, [failedBindingCount]);
 
   async function connectToBot() {
 
@@ -71,6 +79,8 @@ export function ConnectScreen({setConnectedState} : ConnectScreenProps) {
       } catch (error) {
         //Alert.alert('Error', 'Failed to connect to the internet.');
         console.error('Connection check failed:', error);
+        console.log("Trying again!");
+        setFailedBindingCount((prev) => prev + 1);
       }
     });
   }

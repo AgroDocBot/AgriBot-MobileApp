@@ -1,10 +1,17 @@
 import React, { useState, useSyncExternalStore, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Pressable, Dimensions } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { startMeasurement, stopMeasurement, incrementDuration } from '@/redux/measurementSlice';
+import { startMeasurement, stopMeasurement, incrementDuration } from '@/redux/measurementNewSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomModal from './CustomModal';
 import i18n from '@/translations/i18n';
+//import { updateExplored } from '@/redux/measurementSlice';
+import { io } from "socket.io-client";
+import { AppDispatch } from '@/redux/store';
+import { RootState } from '@/redux/store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const socket = io("wss://agribot-backend-abck.onrender.com")
 
 export default function Card({ data, activeTab, onEdit, onRemove, fields }: any) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -12,15 +19,20 @@ export default function Card({ data, activeTab, onEdit, onRemove, fields }: any)
 
   const [measurementData, setMeasurementData] = useState([{plant : "TestPlant", index: '2'}]);
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
-  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+  const { language, controlStyle, unitsSystem } = useSelector((state: RootState) => state.settings);
+  const measurementId = useSelector((state: RootState) => state.measurementnew.measurementId);
 
   if(language === 'English') i18n.locale = 'en';
   else if(language === 'Български') i18n.locale = 'bg';
   else i18n.locale = 'de';
 
   //console.log("Data passed to card:"+JSON.stringify(data))
+
+  useEffect(() => {
+    console.log("Updated activeMeasurement from Redux:" + measurementId);
+  }, [measurementId]);
 
   const openModal = () => {
     setModalVisible(true);
@@ -33,41 +45,46 @@ export default function Card({ data, activeTab, onEdit, onRemove, fields }: any)
       .catch((error) => console.error('Error fetching plant data:', error));
   };
 
-  const toggleMeasurement = () => {
+  const toggleMeasurement = async () => {
     if (measurementRunning) {
       setMeasurementRunning(false);
       dispatch(stopMeasurement());
     } else {
       setMeasurementRunning(true);
       dispatch(startMeasurement(data.id));
+      await AsyncStorage.setItem('measurementId', JSON.stringify(data.id));
+      console.log("Setting measurement to: "+measurementId);
     }
   };
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-
+  
     if (measurementRunning) {
       interval = setInterval(() => {
         dispatch(incrementDuration());
-        console.log('sec added');
-        console.log(JSON.stringify({duration: interval, explored: data.explored, measurementId: data.id }));
-        fetch(`https://agribot-backend-abck.onrender.com/measurements/edit`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
-          },
-          body: JSON.stringify({duration: interval, explored: data.explored, measurementId: data.id }),
-        });
       }, 1000);
+      console.log("Attempting to increment from component")
     } else if (!measurementRunning && interval) {
       clearInterval(interval);
     }
-
+  
     return () => {
       if (interval) clearInterval(interval);
     };
   }, [measurementRunning, dispatch]);
+  
+  useEffect(() => {
+    socket.on('measurementUpdated', (data) => {
+      if (data.measurementId === data.id) {
+        //dispatch(updateExplored(data.explored));
+      }
+    });
+  
+    return () => {
+      socket.off('measurementUpdated');
+    };
+  }, [dispatch]);
 
   const renderContent = () => {
     switch (activeTab) {

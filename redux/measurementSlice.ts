@@ -1,34 +1,90 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
+import socketManager from './websocketManager';
+import { store } from './store';
 
-interface MeasurementState {
-  currentMeasurementId: number | null;
-  duration: number; // in seconds
-}
-
-const initialState: MeasurementState = {
-  currentMeasurementId: null,
-  duration: 0,
-};
-
-const measurementSlice = createSlice({
+export const measurementSlice = createSlice({
   name: 'measurement',
-  initialState,
+  initialState: {
+    activeMeasurement: 12,
+    duration: 0,
+    explored: 0,
+    socketConnected: false,
+  },
   reducers: {
-    startMeasurement: (state, action: PayloadAction<number>) => {
-      state.currentMeasurementId = action.payload;
+    startMeasurement: (state, action) => {
+      state.activeMeasurement = action.payload;
       state.duration = 0;
+      state.explored = 0;
+
+      socketManager.sendMessage({
+        type: 'startMeasurement',
+        measurementId: action.payload,
+      });
     },
     stopMeasurement: (state) => {
-      state.currentMeasurementId = null;
+      if (state.activeMeasurement) {
+        socketManager.sendMessage({
+          type: 'stopMeasurement',
+          measurementId: state.activeMeasurement,
+        });
+      }
+      state.activeMeasurement = 0;
       state.duration = 0;
+      state.explored = 0;
     },
     incrementDuration: (state) => {
-      if (state.currentMeasurementId) {
+      if (state.activeMeasurement) {
         state.duration += 1;
+
+        socketManager.sendMessage({
+          type: 'updateMeasurement',
+          measurementId: state.activeMeasurement,
+          duration: state.duration,
+          explored: state.explored,
+        });
+
+        console.log("Attempt to increment from Redux state");
       }
     },
-  },
+    updateExplored: (state, action) => {
+      if (state.activeMeasurement) {
+        state.explored = action.payload;
+
+        socketManager.sendMessage({
+          type: 'updateMeasurement',
+          measurementId: state.activeMeasurement,
+          duration: state.duration,
+          explored: state.explored,
+        });
+      }
+    },
+    setSocketConnected: (state, action) => {
+      state.socketConnected = action.payload;
+    }
+  }
 });
 
-export const { startMeasurement, stopMeasurement, incrementDuration } = measurementSlice.actions;
+socketManager.onOpen(() => {
+  console.log('WebSocket connection established');
+  store.dispatch(setSocketConnected(true));
+});
+
+socketManager.onMessage((event) => {
+  const message = JSON.parse(event.data);
+  
+  if (message.type === 'measurementUpdated') {
+    console.log('Measurement updated:', message);
+  }
+});
+
+socketManager.onError((error) => {
+  console.error('WebSocket error:', error);
+});
+
+socketManager.onClose(() => {
+  console.log('WebSocket connection closed');
+  store.dispatch(setSocketConnected(false));
+});
+
+export const { startMeasurement, stopMeasurement, incrementDuration, updateExplored, setSocketConnected } = measurementSlice.actions;
 export default measurementSlice.reducer;
