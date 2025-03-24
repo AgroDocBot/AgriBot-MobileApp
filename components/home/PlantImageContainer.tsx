@@ -4,13 +4,14 @@ import { Dimensions } from "react-native";
 interface PlantImageProps {
     index : number,
     name : string,
-    date : string
+    date : string,
+    imageUrl: string | null
 }
 
-export default function PlantImagesContainer({index, name, date} : PlantImageProps) {
+export default function PlantImagesContainer({index, name, date, imageUrl} : PlantImageProps) {
     return (
       <View key={index} style={styles.plantItem}>
-        <Image source={require('@/assets/images/proxy-image12.jpeg')} style={styles.plantImage} />
+        <Image source={ imageUrl ? {uri: imageUrl} : {uri: ""}} style={styles.plantImage} />
         <Text style={styles.plantName}>{name}</Text>
         <Text style={styles.plantDate}>{date}</Text>
       </View>

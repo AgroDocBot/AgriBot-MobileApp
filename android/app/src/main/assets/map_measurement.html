@@ -21,19 +21,33 @@
     const map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/streets-v12',
-      zoom: 17,  // High zoom level for better detail
-      center: [0, 0]  // Default center (updated dynamically)
+      zoom: 15,  // High zoom level for better detail
+      center: [42, 21]  // Default center (updated dynamically)
     });
 
-    let plantMarker, userMarker;
-    
-    // Function to set plant marker from React Native data
-    function setPlantMarker(lat, lng) {
-      if (plantMarker) plantMarker.remove();
-      plantMarker = new mapboxgl.Marker({ color: 'red' })
-        .setLngLat([lng, lat])
-        .addTo(map);
-      map.setCenter([lng, lat]);  // Center map on plant location
+    let userMarker;
+    let plantMarkers = []; // Store plant markers
+
+    // Function to set multiple plant markers
+    function setPlantMarkers(plants) {
+      // Remove previous markers
+      plantMarkers.forEach(marker => marker.remove());
+      plantMarkers = []; 
+
+      // Add new markers
+      plants.forEach(({ lat, lng }) => {
+        const marker = new mapboxgl.Marker({ color: 'red' })
+          .setLngLat([lng, lat])
+          .addTo(map);
+        plantMarkers.push(marker);
+      });
+
+      // Adjust the map to fit all markers
+      if (plants.length > 0) {
+        const bounds = new mapboxgl.LngLatBounds();
+        plants.forEach(({ lat, lng }) => bounds.extend([lng, lat]));
+        map.fitBounds(bounds, { padding: 50 });
+      }
     }
 
     // Function to set or update user marker
@@ -49,9 +63,9 @@
 
     // Listen for messages from React Native
     window.addEventListener('message', (event) => {
-      const { plantLat, plantLng, userLat, userLng } = event.data;
-      setPlantMarker(plantLat, plantLng);
-      setUserMarker(userLat, userLng);
+      const { plants, userLat, userLng } = event.data;
+      if (plants) setPlantMarkers(plants);
+      if (userLat !== undefined && userLng !== undefined) setUserMarker(userLat, userLng);
     });
 
     // Function to track user's live location

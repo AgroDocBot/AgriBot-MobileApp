@@ -8,10 +8,26 @@ import { createOrUpdateRobotData, updateUsage, updateBattery, setBatteryStatus }
 import { useEffect } from "react";
 import { RootState } from "@/redux/store";
 import type { AppDispatch } from '@/redux/store';
+import type { HealthyPlant, DiseasedPlant } from "@/constants/types/PlantsInterfaces";
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState("Last plants");
+  const [latestHPlants, setLatestHPlants] = useState<any[]>([
 
+    {
+        id:123,
+        latitude:"42",
+        longitude:"21",
+        crop:"Net ",
+        disease:"lotch (Pyrenophora teres)",
+        imageUrl:"https://res.cloudinary.com/dfdga8pr1/image/upload/v1742508929/s4d9l1ymz59plwlmsdin.jpg",
+        measurementId:23
+    }
+
+]);
+  const [latestDPlants, setLatestDPlants] = useState<any[]>([]);
+
+  let plantsArray: any[] = [];
   const dispatch = useDispatch<AppDispatch>();
 
   const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
@@ -24,7 +40,34 @@ const Home = () => {
   const battery = useSelector((state: RootState) => state.battery.battery);
 
   useEffect(() => {
+    console.log("The arrays: "+JSON.stringify(latestHPlants));
+  }, [latestDPlants, latestHPlants])
+
+  useEffect(() => {
     if(user?.id) dispatch(createOrUpdateRobotData(user?.id));
+    if(user) {
+      fetch(`https://agribot-backend-abck.onrender.com/plants/healthy/user/${user.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {setLatestHPlants(data); console.log(data)})
+        .catch((error) => console.error('Error fetching healthy plants:', error));
+      
+      fetch(`https://agribot-backend-abck.onrender.com/plants/diseased/user/${user.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {setLatestDPlants(JSON.parse(JSON.stringify(data))); console.log(JSON.stringify(latestDPlants)); plantsArray = data.slice(); setLatestHPlants([...data])})
+        .catch((error) => console.error('Error fetching diseased plants:', error));
+    }
   }, [user, dispatch]);
 
   return (
@@ -61,20 +104,15 @@ const Home = () => {
       <View style={styles.plantImagesContainer}>
         {activeTab === "Last plants" ? (
           <>
-            <PlantImagesContainer index={0} name="Field1" date="01-01-2025"/>
-
-            <PlantImagesContainer index={1} name="Field1" date="01-01-2025"/>
-
-            <PlantImagesContainer index={2} name="Field1" date="01-01-2025"/>
+            {latestHPlants?.map(plant => (
+              <PlantImagesContainer index={plant.id} name={plant.crop} date={plant.measurementId.toString()} imageUrl={plant.imageUrl}/>
+            ))}
           </>
         ) : (
           <>
-            <PlantImagesContainer index={0} name="Field2" date="02-02-2025"/>
-
-            <PlantImagesContainer index={1} name="Field2" date="02-02-2025"/>
-
-            <PlantImagesContainer index={2} name="Field2" date="02-02-2025"/>
-            <PlantImagesContainer index={3} name="Field2" date="02-02-2025"/>
+            {latestDPlants?.map(plant => (
+              <PlantImagesContainer index={plant.id} name={plant.crop} date={plant.disease} imageUrl={plant.imageUrl}/>
+            ))}
           </>       
           )}
       </View>

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Modal, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
 import WebView from 'react-native-webview';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MeasurementCard from './MeasurementCard';
+import { DiseasedPlant } from '@/constants/types/PlantsInterfaces';
 
 interface CustomModalProps {
   visible: boolean;
@@ -12,6 +13,26 @@ interface CustomModalProps {
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activeTab }) => {
+
+  const [plantsSet, setPlantsSet] = useState<Array<DiseasedPlant> | null>([]);
+
+  useEffect(() => {
+    if(data?.fieldId) fetch(`https://agribot-backend-abck.onrender.com/plants/diseased/measurement/${data.id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {setPlantsSet(data); console.log(JSON.stringify(data)); console.log(data.id)})
+      .catch((error) => console.error('Error fetching plants:', error));
+  }, [visible])
+
+  useEffect(() => {
+    console.log("Plants state: "+JSON.stringify(plantsSet));
+  }, [plantsSet])
+
   const renderModalContent = () => {
     switch (activeTab) {
       case 'fields':
@@ -48,6 +69,22 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
             <Text style={styles.modalText}>
               <Ionicons name="location-outline" size={16} color="#fff" /> Field: {data.fieldId}
             </Text>
+            <View style={styles.mapContainer}>
+              <WebView
+                source={{ uri: 'file:///android_asset/map_measurement.html' }}
+                style={styles.map}
+                injectedJavaScript={` 
+                (function() {
+                  const plants = ${JSON.stringify(plantsSet?.map(plant => ({
+                    lat: plant.latitude,
+                    lng: plant.longitude
+                  })))};
+                  
+                  window.postMessage({ plants }, "*");
+                })();
+                `}
+              />
+            </View>
             <Text style={styles.modalText}>Recent Plants:</Text>
             <ScrollView>
               {data.recentPlants?.map((plant: any, index: number) => (
