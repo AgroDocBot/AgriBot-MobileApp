@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Modal, StyleSheet, Dimensions } from 'react-native';
 import WebView from 'react-native-webview';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import type { DiseasedPlant } from '@/constants/types/PlantsInterfaces';
 
 interface MeasurementCardProps {
-  plant: {
-    name: string;
-    photo: string;
-    healthStatus: string;
-    latitude: number;
-    longitude: number;
-    userLatitude: number;
-    userLongitude: number;
-  };
+  plant: DiseasedPlant
 }
 
 const MeasurementCard: React.FC<MeasurementCardProps> = ({ plant }) => {
@@ -20,29 +13,31 @@ const MeasurementCard: React.FC<MeasurementCardProps> = ({ plant }) => {
 
   return (
     <View style={styles.card}>
-      <Image source={{ uri: plant.photo }} style={styles.image} />
+      <Image source={{ uri: plant.imageUrl }} style={styles.image} />
       <View style={styles.info}>
-        <Text style={styles.name}>{plant.name}</Text>
-        <Text style={[styles.status, plant.healthStatus === 'healthy' ? styles.healthy : styles.diseased]}>
-          {plant.healthStatus}
-        </Text>
-        <TouchableOpacity onPress={() => setMapVisible(true)}>
-          <Ionicons name="map-outline" size={28} color="#fff" />
-        </TouchableOpacity>
+          <Text style={styles.name}>{plant.crop}</Text>
+          <Text style={styles.status}>{plant.disease}</Text>
       </View>
+      <TouchableOpacity onPress={() => setMapVisible(true)} style={styles.iconStyle}>
+          <Ionicons name="map-outline" size={32} color="#fff" />
+      </TouchableOpacity>
 
       <Modal visible={mapVisible} animationType="slide">
         <View style={styles.mapContainer}>
-          <WebView
-            source={{ uri: 'file:///android_asset/map_measurement.html' }}
-            style={styles.map}
-            injectedJavaScript={`window.postMessage(${JSON.stringify({
-              plantLat: plant.latitude,
-              plantLng: plant.longitude,
-              userLat: plant.userLatitude,
-              userLng: plant.userLongitude,
-            })}, "*");`}
-          />
+        <WebView
+                source={{ uri: 'file:///android_asset/map_measurement.html' }}
+                style={styles.map}
+                injectedJavaScript={` 
+                (function() {
+                  const plants = ${JSON.stringify([{
+                    lat: plant.latitude,
+                    lng: plant.longitude
+                  }])};
+                  
+                  window.postMessage({ plants }, "*");
+                })();
+                `}
+              />
           <TouchableOpacity onPress={() => setMapVisible(false)} style={styles.closeButton}>
             <Ionicons name="close-outline" size={32} color="#fff" />
           </TouchableOpacity>
@@ -52,17 +47,20 @@ const MeasurementCard: React.FC<MeasurementCardProps> = ({ plant }) => {
   );
 };
 
+const {width, height} = Dimensions.get('window');
+
 const styles = StyleSheet.create({
-  card: { flexDirection: 'row', backgroundColor: '#333', padding: 10, borderRadius: 8, marginVertical: 5 },
-  image: { width: 50, height: 50, borderRadius: 8 },
+  card: { flexDirection: 'row', backgroundColor: '#333', padding: 10, borderRadius: 8, marginVertical: 5, height: 0.12*height, alignItems: 'center' },
+  image: { width: 0.12*height - 20, height: 0.12*height - 20, borderRadius: 8 },
   info: { flex: 1, marginLeft: 10 },
   name: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
-  status: { fontSize: 14, fontWeight: 'bold', marginVertical: 5 },
+  status: { color: '#fff', fontSize: 14, fontWeight: 'bold', marginVertical: 5 },
   healthy: { color: 'green' },
   diseased: { color: 'red' },
   mapContainer: { flex: 1, backgroundColor: '#222' },
   map: { flex: 1 },
   closeButton: { alignSelf: 'center', marginTop: 20 },
+  iconStyle: {marginLeft: 10}
 });
 
 export default MeasurementCard;

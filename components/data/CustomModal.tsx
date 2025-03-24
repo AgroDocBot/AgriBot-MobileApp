@@ -4,6 +4,8 @@ import WebView from 'react-native-webview';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MeasurementCard from './MeasurementCard';
 import { DiseasedPlant } from '@/constants/types/PlantsInterfaces';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 interface CustomModalProps {
   visible: boolean;
@@ -15,23 +17,40 @@ interface CustomModalProps {
 const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activeTab }) => {
 
   const [plantsSet, setPlantsSet] = useState<Array<DiseasedPlant> | null>([]);
+  const [fieldPlantSet, setFieldPlantSet] = useState<Array<DiseasedPlant | null>>([]);
+
+  const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
-    if(data?.fieldId) fetch(`https://agribot-backend-abck.onrender.com/plants/diseased/measurement/${data.id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {setPlantsSet(data); console.log(JSON.stringify(data)); console.log(data.id)})
-      .catch((error) => console.error('Error fetching plants:', error));
+    //differentiating between measurements and fields based on their properties (measurements have fieldId, where fields have ownerId)
+    if(data?.fieldId) { fetch(`https://agribot-backend-abck.onrender.com/plants/diseased/measurement/${data.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {setPlantsSet(data); console.log(JSON.stringify(data)); console.log(data.id)})
+        .catch((error) => console.error('Error fetching plants:', error));
+    } else if(data?.ownerId) {
+      fetch(`https://agribot-backend-abck.onrender.com/plants/diseased/user/${user?.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {setFieldPlantSet(data); console.log(JSON.stringify(data)); console.log(data.id)})
+        .catch((error) => console.error('Error fetching plants:', error));
+    }
   }, [visible])
 
   useEffect(() => {
     console.log("Plants state: "+JSON.stringify(plantsSet));
-  }, [plantsSet])
+    console.log("Field plant state: "+JSON.stringify(fieldPlantSet));
+  }, [plantsSet, fieldPlantSet])
 
   const renderModalContent = () => {
     switch (activeTab) {
@@ -50,12 +69,14 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
               />
             </View>
             <Text style={styles.modalText}>Diseased Plants:</Text>
-            {data.diseasedPlants?.length ? (
-              data.diseasedPlants.map((plant: any, index: number) => (
-                <Text key={index} style={styles.modalText}>
-                  - {plant.name} ({plant.disease})
-                </Text>
-              ))
+            {fieldPlantSet ? (
+                <ScrollView>
+                {fieldPlantSet?.slice(0, 6).map((plant: any) => (
+                  <>
+                    <MeasurementCard key={plant.id} plant={plant} />
+                  </>
+                ))}
+              </ScrollView>
             ) : (
               <Text style={styles.modalText}>No diseased plants found.</Text>
             )}
@@ -87,8 +108,10 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
             </View>
             <Text style={styles.modalText}>Recent Plants:</Text>
             <ScrollView>
-              {data.recentPlants?.map((plant: any, index: number) => (
-                <MeasurementCard key={index} plant={plant} />
+              {plantsSet?.map((plant: any) => (
+                <>
+                  <MeasurementCard key={plant.id} plant={plant} />
+                </>
               ))}
             </ScrollView>
           </>
