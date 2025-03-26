@@ -17,6 +17,7 @@ import { Platform } from 'react-native';
 import RNBlobUtil from 'react-native-blob-util';
 import { updateBattery, setLastConnection, setSessionDuration, updateUsage } from '@/redux/batteryUsageSlice';
 import { preventAutoHideAsync } from 'expo-splash-screen/build';
+import PlantDiagnosis from './PlantDiagnosis';
 
 export default function RobotControl({ isConnected }: { isConnected: boolean}) {
   const [photo, setPhoto] = useState<any>('');
@@ -244,23 +245,36 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
   useEffect(() => {
     const processPlantData = (data: any) => {
       let result = JSON.stringify(data);
-      let s = result.indexOf("Predicted Class:");
-      let e = result.indexOf("Prediction Probabilities:");
-      let resClass = result.substring(s + 16, e - 3);
+
+      let s = result.indexOf("Predicted class:");
+      let e = result.indexOf("certainty:");
+      let resClass = result.substring(s + 16, e - 2).trim();
   
       console.log("Processing measurement: " + measurementId);
+
+      const latIndex = result.indexOf("lat:");
+      const lonIndex = result.indexOf("lon:");
   
-      const isHealthy = resClass.includes("Healthy");
+      let latitude = latIndex !== -1 ? parseFloat(result.substring(latIndex + 4, latIndex + 12).trim()) : 42.0;
+      let longitude = lonIndex !== -1 ? parseFloat(result.substring(lonIndex + 4, lonIndex + 12).trim()) : 21.0;
+  
+      // Determine if the plant is healthy
+      const isHealthy = resClass.toLowerCase().includes("healthy");
+  
+      // Extract crop and disease
+      let crop = resClass.split("___")[0] || "Unknown";
+      let disease = isHealthy ? undefined : resClass.split("___")[1] || "Unknown";
+  
       const plantData = {
-        latitude: data.latitude || 42,
-        longitude: data.longitude || 21,
-        crop: resClass.substring(1, 5),
+        latitude,
+        longitude,
+        crop,
         measurementId,
-        ...(isHealthy ? {} : { disease: resClass.substring(6, e - 3) }),
+        ...(isHealthy ? {} : { disease }),
       };
   
       collectPlantData(plantData, isHealthy);
-      setMessage(resClass);
+      setMessage(resClass.replace(/_/g, ' '));
     };
   
     if (latestMessage) {
@@ -362,9 +376,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
             <Text>No Image</Text>
           )}
         </View>
-        <View style={styles.textBox}>
-          <Text>{message}</Text>
-        </View>
+        <PlantDiagnosis message={message}/>
       </View>
 
       <TouchableOpacity

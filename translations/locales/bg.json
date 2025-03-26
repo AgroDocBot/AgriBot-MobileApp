@@ -62,6 +62,36 @@
       "lastUsed": "Последно използван преди",
       "daysAgo": "дни",
       "disconnected": "Несвързан"
+    },
+    "classification": {
+        "diseases": {
+          "Cercospora Leaf Spot": "Петниста листна плесен",
+          "Common Rust": "Обикновена ръжда",
+          "Northern Leaf Blight": "Северен листен пригор",
+          "Black Rot": "Черно гниене",
+          "Esca (Black Measles)": "Еска (черна мрежеста болест)",
+          "Leaf Blight (Isariopsis Leaf Spot)": "Листен пригор (петна от Isariopsis)",
+          "Bacterial Spot": "Бактериално петносване",
+          "Early Blight": "Ранен пригор",
+          "Late Blight": "Късен пригор",
+          "Leaf Mold": "Листна плесен",
+          "Septoria Leaf Spot": "Петносване от Септория",
+          "Spider Mites (Two-spotted Spider Mite)": "Паяжинообразни акари",
+          "Target Spot": "Целево петносване",
+          "Tomato Yellow Leaf Curl Virus": "Вирус на жълтата къдрава листна мозайка по доматите",
+          "Tomato Mosaic Virus": "Вирус на мозайката по доматите",
+          "Healthy": "Здраво"
+        },
+        "crops": {
+          "Corn": "Царевица",
+          "Grape": "Лоза",
+          "Pepper": "Камба",
+          "Potato": "Картоф",
+          "Raspberry": "Малина",
+          "Soybean": "Соя",
+          "Strawberry": "Ягода",
+          "Tomato": "Домат"
+        }
     }
   }
   

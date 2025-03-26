@@ -62,5 +62,35 @@
       "lastUsed": "Letzt benutzt vor",
       "daysAgo": "Tagen",
       "disconnected": "Unverbindet"
+    },
+    "classification": {
+      "diseases": {
+        "Cercospora Leaf Spot": "Cercospora-Blattfleckenkrankheit",
+        "Common Rust": "Gemeiner Rost",
+        "Northern Leaf Blight": "Nördlicher Blattbrand",
+        "Black Rot": "Schwarzfäule",
+        "Esca (Black Measles)": "Esca (Schwarzfleckenkrankheit)",
+        "Leaf Blight (Isariopsis Leaf Spot)": "Blattbrand (Isariopsis-Blattflecken)",
+        "Bacterial Spot": "Bakterienflecken",
+        "Early Blight": "Frühfäule",
+        "Late Blight": "Spätfäule",
+        "Leaf Mold": "Blattmehltau",
+        "Septoria Leaf Spot": "Septoria-Blattfleckenkrankheit",
+        "Spider Mites (Two-spotted Spider Mite)": "Spinnmilben (Zweifleckige Spinnmilbe)",
+        "Target Spot": "Zielpunktfleckenkrankheit",
+        "Tomato Yellow Leaf Curl Virus": "Tomaten-Gelbblatt-Kräuselvirus",
+        "Tomato Mosaic Virus": "Tomatenmosaikvirus",
+        "Healthy": "Gesund"
+      },
+      "crops": {
+        "Corn": "Mais",
+        "Grape": "Weintraube",
+        "Pepper": "Paprika",
+        "Potato": "Kartoffel",
+        "Raspberry": "Himbeere",
+        "Soybean": "Sojabohne",
+        "Strawberry": "Erdbeere",
+        "Tomato": "Tomate"
+      }
     }
   }

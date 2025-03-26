@@ -117,6 +117,13 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
           </>
         );
 
+      case 'diseases':
+        return (
+          <>
+            
+          </>
+        )
+
       default:
         return <Text style={styles.modalText}>No data available.</Text>;
     }

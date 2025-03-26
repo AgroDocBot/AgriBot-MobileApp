@@ -62,5 +62,35 @@
       "lastUsed": "Last used",
       "daysAgo": "days ago",
       "disconnected": "Disconnected"
+    },
+    "classification": {
+      "diseases": {
+        "Cercospora Leaf Spot": "Cercospora Leaf Spot",
+        "Common Rust": "Common Rust",
+        "Northern Leaf Blight": "Northern Leaf Blight",
+        "Black Rot": "Black Rot",
+        "Esca (Black Measles)": "Esca (Black Measles)",
+        "Leaf Blight (Isariopsis Leaf Spot)": "Leaf Blight (Isariopsis Leaf Spot)",
+        "Bacterial Spot": "Bacterial Spot",
+        "Early Blight": "Early Blight",
+        "Late Blight": "Late Blight",
+        "Leaf Mold": "Leaf Mold",
+        "Septoria Leaf Spot": "Septoria Leaf Spot",
+        "Spider Mites (Two-spotted Spider Mite)": "Spider Mites (Two-spotted Spider Mite)",
+        "Target Spot": "Target Spot",
+        "Tomato Yellow Leaf Curl Virus": "Tomato Yellow Leaf Curl Virus",
+        "Tomato Mosaic Virus": "Tomato Mosaic Virus",
+        "Healthy": "Healthy"
+      },
+      "crops": {
+        "Corn": "Corn (maize)",
+        "Grape": "Grape",
+        "Pepper": "Pepper (bell)",
+        "Potato": "Potato",
+        "Raspberry": "Raspberry",
+        "Soybean": "Soybean",
+        "Strawberry": "Strawberry",
+        "Tomato": "Tomato"
+      }
     }
   }
