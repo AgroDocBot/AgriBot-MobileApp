@@ -18,7 +18,8 @@ const PlantDiagnosis = ({ message }: { message: string }) => {
         // Step 1: Normalize the message (replace underscores and remove extra characters)
         let cleanMessage = message.replace(/___/g, ' ')  // Replace triple underscores
                                   .replace(/_/g, ' ')   // Replace single underscores
-                                  .replace(/\(.*?\)/g, '') // Remove content in parentheses
+                                  .replace(/_\(/g, '')
+                                  .replace(/,_/g, '')
                                   .trim(); 
 
         // Step 2: Extract the crop and disease
@@ -33,23 +34,23 @@ const PlantDiagnosis = ({ message }: { message: string }) => {
 
         // Special cases mapping for crops with multiple words
         const cropMapping: { [key: string]: string } = {
-            'Corn': 'Corn_(maize)',
-            'Pepper': 'Pepper,_bell'
+            'Corn_(maize)': 'Corn',
+            'Pepper,_bell': 'Pepper'
         };
         if (cropMapping[crop]) {
             crop = cropMapping[crop];
         }
 
         // Step 3: Translate using i18n keys
-        const translatedCrop = i18n.t(`crops.${crop}`); // Default to crop name if not found
-        const translatedDisease = i18n.t(`diseases.${disease}`); // Default to disease name if not found
+        const translatedCrop = i18n.t(`classification.crops.${crop}`); // Default to crop name if not found
+        const translatedDisease = i18n.t(`classification.diseases.${disease}`); // Default to disease name if not found
 
         return `${translatedCrop} - ${translatedDisease}`;
     };
 
     return (
         <View style={styles.textBox}>
-            <Text>{cleanAndTranslateMessage(message)}</Text>
+            <Text>{message}</Text>
         </View>
     );
 };

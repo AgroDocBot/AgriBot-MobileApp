@@ -6,6 +6,7 @@ import MeasurementCard from './MeasurementCard';
 import { DiseasedPlant } from '@/constants/types/PlantsInterfaces';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
+import { Image } from 'react-native';
 
 interface CustomModalProps {
   visible: boolean;
@@ -18,6 +19,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
 
   const [plantsSet, setPlantsSet] = useState<Array<DiseasedPlant> | null>([]);
   const [fieldPlantSet, setFieldPlantSet] = useState<Array<DiseasedPlant | null>>([]);
+  const [diseaseData, setDiseaseData] = useState<any>(null);
 
   const user = useSelector((state: RootState) => state.auth.user);
 
@@ -43,6 +45,17 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
       })
         .then((response) => response.json())
         .then((data) => {setFieldPlantSet(data); console.log(JSON.stringify(data)); console.log(data.id)})
+        .catch((error) => console.error('Error fetching plants:', error));
+    } else {
+      fetch(`https://agribot-backend-abck.onrender.com/diseases/${data.name}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {setDiseaseData(data); console.log(JSON.stringify(data)); console.log(data.id)})
         .catch((error) => console.error('Error fetching plants:', error));
     }
   }, [visible])
@@ -120,7 +133,10 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
       case 'diseases':
         return (
           <>
-            
+            <ScrollView>
+              <Image source={{ uri : diseaseData?.imageUrl}} />
+              <Text>{diseaseData?.imageUrl}</Text>
+            </ScrollView>
           </>
         )
 

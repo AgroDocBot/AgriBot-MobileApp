@@ -236,6 +236,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
   
     const intervalId = setInterval(() => {
       requestBatteryData();
+      
       //if(user && measurementId) dispatch(updateUsage({userId: user?.id, timeUsed: Date.now() - connectionStartTime!}))
     }, 60000); 
   

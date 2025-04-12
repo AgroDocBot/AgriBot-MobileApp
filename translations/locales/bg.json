@@ -48,7 +48,8 @@
       "measurement": "измерване",
       "fieldName": "Име на полето",
       "cropType": "Отглеждана култура",
-      "selectField": "Изберете поле"
+      "selectField": "Изберете поле",
+      "area": "Площ"
     },
     "connect": {
       "not_connected": "Опа, изглежда, че не сте свързани!",
@@ -80,17 +81,35 @@
           "Target Spot": "Целево петносване",
           "Tomato Yellow Leaf Curl Virus": "Вирус на жълтата къдрава листна мозайка по доматите",
           "Tomato Mosaic Virus": "Вирус на мозайката по доматите",
-          "Healthy": "Здраво"
+          "Healthy": "Здраво",
+          "_Cercospora Leaf Spot": "Петниста листна плесен",
+          "_Common Rust": "Обикновена ръжда",
+          "_Northern Leaf Blight": "Северен листен пригор",
+          "_Black Rot": "Черно гниене",
+          "_Esca (Black Measles)": "Еска (черна мрежеста болест)",
+          "_Leaf Blight (Isariopsis Leaf Spot)": "Листен пригор (петна от Isariopsis)",
+          "_Bacterial Spot": "Бактериално петносване",
+          "_Early Blight": "Ранен пригор",
+          "_Late Blight": "Късен пригор",
+          "_Leaf Mold": "Листна плесен",
+          "_Septoria Leaf Spot": "Петносване от Септория",
+          "_Spider Mites (Two-spotted Spider Mite)": "Паяжинообразни акари",
+          "_Target Spot": "Целево петносване",
+          "_Tomato Yellow Leaf Curl Virus": "Вирус на жълтата къдрава листна мозайка по доматите",
+          "_Tomato Mosaic Virus": "Вирус на мозайката по доматите",
+          "_Healthy": "Здраво",
+          "data": "данни"
         },
         "crops": {
           "Corn": "Царевица",
           "Grape": "Лоза",
-          "Pepper": "Камба",
+          "Pepperbell": "Камба",
           "Potato": "Картоф",
           "Raspberry": "Малина",
           "Soybean": "Соя",
           "Strawberry": "Ягода",
-          "Tomato": "Домат"
+          "Tomato": "Домат",
+          "No": "Няма"
         }
     }
   }

@@ -48,7 +48,8 @@
       "measurement": "Messung",
       "fieldName": "Feldname",
       "cropType": "Feldfrucht",
-      "selectField": "Wählen Sie bitte ein Feld"
+      "selectField": "Wählen Sie bitte ein Feld",
+      "area": "Fläche"
     },
     "connect": {
       "not_connected": "Oops, es scheint sich aus, als ob Sie nicht verbunden sind!",
@@ -85,7 +86,7 @@
       "crops": {
         "Corn": "Mais",
         "Grape": "Weintraube",
-        "Pepper": "Paprika",
+        "Pepperbell": "Paprika",
         "Potato": "Kartoffel",
         "Raspberry": "Himbeere",
         "Soybean": "Sojabohne",

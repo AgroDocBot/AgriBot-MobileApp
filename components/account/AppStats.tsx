@@ -1,10 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import { VictoryChart, VictoryBar, VictoryPie, VictoryTheme } from 'victory-native';
 import i18n from '@/translations/i18n';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
 
 const screenWidth = Dimensions.get('window').width;
+
 
 const sampleStats = {
   controlHours: [
@@ -24,43 +26,108 @@ const sampleStats = {
   ],
 };
 
-export const  AppStats = () => {
+export const AppStats = () => {
+  const { language } = useSelector((state: any) => state.settings);
+  const { user } = useSelector((state: any) => state.auth); // assuming user object contains id and username
 
-  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+  const [fieldCoverage, setFieldCoverage] = useState([{ x: "Explored", y: 0 }, { x: "Unexplored", y: 1 }]);
+  const [measurementRates, setMeasurementRates] = useState([{ x: "Success", y: 0 }, { x: "Failed", y: 1 }]);
+  const [loading, setLoading] = useState(true);
 
-  if(language === 'English') i18n.locale = 'en';
-  else if(language === 'Български') i18n.locale = 'bg';
+  if (language === 'English') i18n.locale = 'en';
+  else if (language === 'Български') i18n.locale = 'bg';
   else i18n.locale = 'de';
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [fieldsRes, measurementsRes, healthyRes, diseasedRes] = await Promise.all([
+          axios.get(`https://agribot-backend-abck.onrender.com/fields/getfields/${user.id}`),
+          axios.get(`https://agribot-backend-abck.onrender.com/measurements/read/${user.username}`),
+          axios.get(`https://agribot-backend-abck.onrender.com/plants/healthy/user/${user.id}`),
+          axios.get(`https://agribot-backend-abck.onrender.com/plants/diseased/user/${user.id}`),
+        ]);
+
+        const fields = fieldsRes.data;
+        const measurements : Array<any> = measurementsRes.data;
+        const healthy = healthyRes.data;
+        const diseased = diseasedRes.data;
+
+        // Field Coverage
+        let totalExplored = 0;
+        let totalArea = 0;
+        for (const field of fields) {
+          const fieldMeasurements = measurements.filter(m => m.fieldId === field.id);
+          const sumExplored = fieldMeasurements.reduce((acc, m) => acc + (m.explored || 0), 0);
+          const avgExplored = fieldMeasurements.length ? sumExplored / fieldMeasurements.length : 0;
+
+          totalExplored += avgExplored;
+          totalArea += parseFloat(field.area);
+        }
+
+        const exploredPercent = totalArea > 0 ? (totalExplored / totalArea) * 100 : 0;
+        const unexploredPercent = 100 - exploredPercent;
+
+        setFieldCoverage([
+          { x: i18n.t('stats.explored'), y: exploredPercent },
+          { x: i18n.t('stats.unexplored'), y: unexploredPercent }
+        ]);
+
+        // Measurement Rates
+        const totalHealthy = healthy.length;
+        const totalDiseased = diseased.length;
+        const total = totalHealthy + totalDiseased;
+
+        const successRate = total > 0 ? (totalHealthy / total) * 100 : 0;
+        const failRate = 100 - successRate;
+
+        setMeasurementRates([
+          { x: i18n.t('stats.success'), y: successRate },
+          { x: i18n.t('stats.failed'), y: failRate }
+        ]);
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, [user]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>{i18n.t('stats.appStats')}</Text>
 
-      {/* Control Hours Chart */}
-      <Text style={styles.subHeader}>{i18n.t('stats.hours')}</Text>
-      <VictoryChart theme={VictoryTheme.material} width={0.9*screenWidth}>
-        <VictoryBar data={sampleStats.controlHours} style={{ data: { fill: "#4caf50" } }} />
-      </VictoryChart>
+      {loading ? (
+        <ActivityIndicator size="large" color="#4caf50" />
+      ) : (
+        <>
+              <Text style={styles.subHeader}>{i18n.t('stats.hours')}</Text>
+              <VictoryChart theme={VictoryTheme.material} width={0.9*screenWidth}>
+                <VictoryBar data={sampleStats.controlHours} style={{ data: { fill: "#4caf50" } }} />
+              </VictoryChart>
+          {/* Field Coverage */}
+          <Text style={styles.subHeader}>{i18n.t('stats.fieldCoverage')}</Text>
+          <VictoryPie
+            data={fieldCoverage}
+            colorScale={["#4caf50", "#ff9800"]}
+            style={{ labels: { fill: "#FFF" } }}
+            width={0.9 * screenWidth}
+            innerRadius={50}
+          />
 
-      {/* Field Coverage Pie Chart */}
-      <Text style={styles.subHeader}>{i18n.t('stats.fieldCoverage')}</Text>
-      <VictoryPie
-        data={sampleStats.fieldCoverage}
-        colorScale={["#4caf50", "#ff9800"]}
-        style={{ labels: { fill: "#FFF" } }}
-        width={0.9*screenWidth}
-        innerRadius={50}
-      />
-
-      {/* Measurements Success Rate */}
-      <Text style={styles.subHeader}>{i18n.t('stats.measurementRates')}</Text>
-      <VictoryPie
-        data={sampleStats.measurements}
-        colorScale={["#4caf50", "#f44336"]}
-        style={{ labels: { fill: "#FFF" } }}
-        width={0.9*screenWidth}
-        innerRadius={50}
-      />
+          {/* Measurement Success Rate */}
+          <Text style={styles.subHeader}>{i18n.t('stats.measurementRates')}</Text>
+          <VictoryPie
+            data={measurementRates}
+            colorScale={["#4caf50", "#f44336"]}
+            style={{ labels: { fill: "#FFF" } }}
+            width={0.9 * screenWidth}
+            innerRadius={50}
+          />
+        </>
+      )}
     </View>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState, useSyncExternalStore, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Pressable, Dimensions } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { startMeasurement, stopMeasurement, incrementDuration } from '@/redux/measurementNewSlice';
+import { startMeasurement, stopMeasurement, incrementDuration, initDuration } from '@/redux/measurementNewSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomModal from './CustomModal';
 import i18n from '@/translations/i18n';
@@ -10,10 +10,11 @@ import { io } from "socket.io-client";
 import { AppDispatch } from '@/redux/store';
 import { RootState } from '@/redux/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { formatPercent, formatSeconds } from './Formating';
 
 const socket = io("wss://agribot-backend-abck.onrender.com")
 
-export default function Card({ data, activeTab, onEdit, onRemove, fields }: any) {
+export default function Card({ data, activeTab, onEdit, onRemove, fields, measurements }: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const [measurementRunning, setMeasurementRunning] = useState<boolean>(false);
 
@@ -23,6 +24,8 @@ export default function Card({ data, activeTab, onEdit, onRemove, fields }: any)
 
   const { language, controlStyle, unitsSystem } = useSelector((state: RootState) => state.settings);
   const measurementId = useSelector((state: RootState) => state.measurementnew.measurementId);
+
+  const duration = useSelector((state: RootState) => state.measurementnew.duration);
 
   if(language === 'English') i18n.locale = 'en';
   else if(language === 'Български') i18n.locale = 'bg';
@@ -49,15 +52,88 @@ export default function Card({ data, activeTab, onEdit, onRemove, fields }: any)
     if (measurementRunning) {
       setMeasurementRunning(false);
       dispatch(stopMeasurement());
+      
+      await updateCoverage();
+      const endTime = Date.now();
+      const startTimeString = await AsyncStorage.getItem('startTime');
+      const startTime = startTimeString ? parseInt(startTimeString) : 0;
+      const durationInSeconds = Math.floor((endTime - startTime) / 1000);
+  
+      console.log(`Duration (calculated): ${durationInSeconds} seconds`);
+      dispatch(incrementDuration(data.duration + durationInSeconds));
+  
+      try {
+        const response = await fetch(`https://agribot-backend-abck.onrender.com/measurements/edit`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
+          },
+          body: JSON.stringify({
+            measurementId: data.id,
+            explored: await updateCoverage(),
+            duration: data.duration + durationInSeconds
+          }),
+        });
+  
+        if (!response.ok) throw new Error('Failed to update measurement duration');
+        const result = await response.json();
+        console.log('Successfully updated measurement:', result);
+      } catch (err) {
+        console.error('Error updating measurement:', err);
+      }
+  
+      await AsyncStorage.removeItem('startTime');
     } else {
-      setMeasurementRunning(true);
-      dispatch(startMeasurement(data.id));
+      const now = Date.now();
+      await AsyncStorage.setItem('startTime', now.toString());
       await AsyncStorage.setItem('measurementId', JSON.stringify(data.id));
-      console.log("Setting measurement to: "+measurementId);
+      dispatch(initDuration(data.duration));
+      dispatch(startMeasurement(data.id));
+      setMeasurementRunning(true);
+      //await updateCoverage();
     }
   };
 
-  useEffect(() => {
+  const updateCoverage = async () => {
+    if (!data || !data.fieldId || !data.id) return;
+  
+    const field = fields.find((f: any) => f.id === data.fieldId);
+    if (!field) return;
+  
+    const fieldMeasurements = measurements.filter((m: any) => m.fieldId === data.fieldId);
+    const numberOfMeasurements = fieldMeasurements.length;
+  
+    const explored = (numberOfMeasurements) / field.area;
+  
+    console.log(`Updating explored coverage: ${explored} for measurement ${data.id}`);
+  
+    try {
+      const response = await fetch(`https://agribot-backend-abck.onrender.com/measurements/edit`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
+        },
+        body: JSON.stringify({
+          measurementId: data.id,
+          explored: explored,
+          duration: duration
+        }),
+      });
+  
+      if (!response.ok) throw new Error('Failed to update explored value');
+  
+      const result = await response.json();
+      console.log('Successfully updated:', result);
+    } catch (err) {
+      console.error('Error updating coverage:', err);
+    }
+
+    return explored;
+  };
+
+  /*useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
   
     if (measurementRunning) {
@@ -72,7 +148,7 @@ export default function Card({ data, activeTab, onEdit, onRemove, fields }: any)
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [measurementRunning, dispatch]);
+  }, [measurementRunning, dispatch]); */
   
   useEffect(() => {
     socket.on('measurementUpdated', (data) => {
@@ -89,6 +165,7 @@ export default function Card({ data, activeTab, onEdit, onRemove, fields }: any)
   const renderContent = () => {
     switch (activeTab) {
       case 'fields':
+        console.log("Field area: "+data.area);
         return (
           <>
             <Text style={styles.cardTitle}>{data.fieldname}</Text>
@@ -113,10 +190,10 @@ export default function Card({ data, activeTab, onEdit, onRemove, fields }: any)
               <Ionicons name="calendar-outline" size={16} color="#fff" /> {i18n.t('measurements.date')}: {data.createdAt.substring(0, 10)}
             </Text>
             <Text style={styles.cardText}>
-              <Ionicons name="time-outline" size={16} color="#fff" /> {i18n.t('measurements.duration')}: {data.duration}
+              <Ionicons name="time-outline" size={16} color="#fff" /> {i18n.t('measurements.duration')}: {formatSeconds(data.duration)}
             </Text>
             <Text style={styles.cardText}>
-              <Ionicons name="stats-chart-outline" size={16} color="#fff" /> {i18n.t('measurements.percent')}: {data.explored}
+              <Ionicons name="stats-chart-outline" size={16} color="#fff" /> {i18n.t('measurements.percent')}: {formatPercent(data.explored)}
             </Text>
 
           </>

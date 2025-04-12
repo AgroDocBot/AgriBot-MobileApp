@@ -13,7 +13,11 @@
       "appStats": "App Stats",
       "hours": "Hours spend controlling the robot",
       "fieldCoverage": "Field Coverage",
-      "measurementRates": "Measurement success rate"
+      "measurementRates": "Measurement success rate",
+      "explored": "Explored",
+      "unexplored": "Unexplored",
+      "success": "Healthy",
+      "failed": "Diseased"
     },
     "personal": {
       "personalSettings": "Personal Settings",
@@ -48,7 +52,8 @@
       "measurement": "Measurement",
       "fieldName": "Field name",
       "cropType": "Crop Type",
-      "selectField": "Select a Field"
+      "selectField": "Select a Field",
+      "area": "Area"
     },
     "connect": {
       "not_connected": "Oops, it seems you are not connected!",
@@ -80,17 +85,50 @@
         "Target Spot": "Target Spot",
         "Tomato Yellow Leaf Curl Virus": "Tomato Yellow Leaf Curl Virus",
         "Tomato Mosaic Virus": "Tomato Mosaic Virus",
-        "Healthy": "Healthy"
+        "Healthy": "Healthy",
+        "_Cercospora Leaf Spot": "Cercospora Leaf Spot",
+        "_Common Rust": "Common Rust",
+        "_Northern Leaf Blight": "Northern Leaf Blight",
+        "_Black Rot": "Black Rot",
+        "_Esca (Black Measles)": "Esca (Black Measles)",
+        "_Leaf Blight (Isariopsis Leaf Spot)": "Leaf Blight (Isariopsis Leaf Spot)",
+        "_Bacterial Spot": "Bacterial Spot",
+        "_Early Blight": "Early Blight",
+        "_Late Blight": "Late Blight",
+        "_Leaf Mold": "Leaf Mold",
+        "_Septoria Leaf Spot": "Septoria Leaf Spot",
+        "_Spider Mites (Two-spotted Spider Mite)": "Spider Mites (Two-spotted Spider Mite)",
+        "_Target Spot": "Target Spot",
+        "_Tomato Yellow Leaf Curl Virus": "Tomato Yellow Leaf Curl Virus",
+        "_Tomato Mosaic Virus": "Tomato Mosaic Virus",
+        " Cercospora Leaf Spot": "Cercospora Leaf Spot",
+        " Common Rust": "Common Rust",
+        " Northern Leaf Blight": "Northern Leaf Blight",
+        " Black Rot": "Black Rot",
+        " Esca (Black Measles)": "Esca (Black Measles)",
+        " Leaf Blight (Isariopsis Leaf Spot)": "Leaf Blight (Isariopsis Leaf Spot)",
+        " Bacterial Spot": "Bacterial Spot",
+        " Early Blight": "Early Blight",
+        " Late Blight": "Late Blight",
+        " Leaf Mold": "Leaf Mold",
+        " Septoria Leaf Spot": "Septoria Leaf Spot",
+        " Spider Mites (Two-spotted Spider Mite)": "Spider Mites (Two-spotted Spider Mite)",
+        " Target Spot": "Target Spot",
+        " Tomato Yellow Leaf Curl Virus": "Tomato Yellow Leaf Curl Virus",
+        " Tomato Mosaic Virus": "Tomato Mosaic Virus",
+        "_Healthy": "Healthy",
+        "data": "data"
       },
       "crops": {
         "Corn": "Corn (maize)",
         "Grape": "Grape",
-        "Pepper": "Pepper (bell)",
+        "Pepperbell": "Pepper (bell)",
         "Potato": "Potato",
         "Raspberry": "Raspberry",
         "Soybean": "Soybean",
         "Strawberry": "Strawberry",
-        "Tomato": "Tomato"
+        "Tomato": "Tomato",
+        "No": "No"
       }
     }
   }

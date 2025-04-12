@@ -8,7 +8,7 @@ import { PersonalSettings } from '@/components/account/PersonalSettings';
 
 export default function TabAccount() {
   return (
-    <ScrollView>
+    <ScrollView style={styles.viewStyle}>
     <ThemedView style={styles.main}>
       <AccountHeader/>
       <SettingsSection/>
@@ -25,4 +25,7 @@ const styles = StyleSheet.create({
     height: '100%',
     padding: 20,
   },
+  viewStyle: {
+    backgroundColor: '#222c2e',
+  }
 });

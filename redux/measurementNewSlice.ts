@@ -6,21 +6,26 @@ export const measurementSlice = createSlice({
     measurementId: null,
     duration: 0,
     explored: 0,
+    startTime: 0,
   },
   reducers: {
     startMeasurement: (state, action) => {
       state.measurementId = action.payload;
-      state.duration = new Date().getMinutes();
       state.explored = 0;
+      state.startTime = Date.now();
+    },
+    initDuration: (state, action) => {
+      state.duration = action.payload;
     },
     stopMeasurement: (state) => {
-      state.measurementId = null;
-      state.duration = 0;
-      state.explored = 0;
+      if (state.startTime) {
+        //state.duration = Math.floor((Date.now() - state.startTime) / 1000);
+        state.startTime = 0;
+      }
     },
-    incrementDuration: (state) => {
+    incrementDuration: (state, action) => {
       if (state.measurementId) {
-        state.duration += 1;
+        state.duration = action.payload;
       }
     },
     updateExplored: (state, action) => {
@@ -31,5 +36,5 @@ export const measurementSlice = createSlice({
   },
 });
 
-export const { startMeasurement, stopMeasurement, incrementDuration, updateExplored } = measurementSlice.actions;
+export const { startMeasurement, initDuration, stopMeasurement, incrementDuration, updateExplored } = measurementSlice.actions;
 export default measurementSlice.reducer;

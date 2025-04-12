@@ -71,6 +71,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
       body: JSON.stringify({
         fieldname: fieldData.fieldName,
         crop: fieldData.crop,
+        area: fieldData.area,
         latitude: fieldData.location.latitude,
         longitude: fieldData.location.longitude,
         userId: curId,
@@ -95,6 +96,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
         id: fieldData.id,
         fieldname: fieldData.fieldName,
         crop: fieldData.crop,
+        area: fieldData.area,
         latitude: fieldData.location.latitude,
         longitude: fieldData.location.longitude,
         userId: user.id,
@@ -206,13 +208,24 @@ export default function CardList({ activeTab, searchQuery }: any) {
             item.diseaseName.toLowerCase().includes(searchQuery.toLowerCase())
 
       ));
-
+  
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (activeTab === 'fields') {
+      return a.fieldname.localeCompare(b.fieldname);
+    } else if (activeTab === 'measurements') {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // latest first
+    } else if (activeTab === 'diseases') {
+      return a.diseaseName.localeCompare(b.diseaseName);
+    }
+    return 0;
+  });
+      
   return (
     <ScrollView style={styles.wrapper}>
-      {filteredData.length ? (
-        filteredData.map((item: any, index: number) => (
+      {sortedData.length ? (
+        sortedData.map((item: any, index: number) => (
           <Card
-            key={index}
+            key={item.id}
             data={item}
             activeTab={activeTab}
             onEdit={(data: any, currentField : any) => {
@@ -223,6 +236,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
             }}
             onRemove={activeTab === 'measurements' ? handleDeleteMeasurement : handleDelete}
             fields={fields}
+            measurements={measurements}
           />
         ))
       ) : (

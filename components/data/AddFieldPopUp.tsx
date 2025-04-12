@@ -10,6 +10,7 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
   const [id, setId] = useState<number | null>(null);
   const [fieldName, setFieldName] = useState<string>('');
   const [crop, setCrop] = useState<string>('');
+  const [area, setArea] = useState<any>(null);
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
 
@@ -30,6 +31,7 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
         setId(null);
         setFieldName('');
         setCrop('');
+        setArea(null);
         setLatitude('');
         setLongitude('');
       } else if (initialValues) {
@@ -37,6 +39,7 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
         setId(initialValues.id || null)
         setFieldName(initialValues.fieldname || '');
         setCrop(initialValues.crop || '');
+        setArea(initialValues.area?.toString() || '');
         setLatitude(initialValues.latitude?.toString() || '');
         setLongitude(initialValues.longitude?.toString() || '');
       }
@@ -67,7 +70,7 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
       return;
     }
 
-    onSubmit({ id: id, fieldName : fieldName, crop : crop, location: { latitude: parsedLatitude, longitude: parsedLongitude } });
+    onSubmit({ id: id, fieldName : fieldName, crop : crop, area: area, location: { latitude: parsedLatitude, longitude: parsedLongitude } });
     onClose();
   };
 
@@ -94,6 +97,14 @@ export default function AddFieldPopup({ visible, onClose, onSubmit, initialValue
             placeholderTextColor="#888"
             value={crop}
             onChangeText={setCrop}
+            keyboardType="default"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder={i18n.t('add_edit_popup.area')}
+            placeholderTextColor="#888"
+            value={area}
+            onChangeText={setArea}
             keyboardType="default"
           />
           <View style={styles.mapContainer}>
