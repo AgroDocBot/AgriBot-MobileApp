@@ -19,6 +19,7 @@ import { updateBattery, setLastConnection, setSessionDuration, updateUsage } fro
 import { preventAutoHideAsync } from 'expo-splash-screen/build';
 import PlantDiagnosis from './PlantDiagnosis';
 import FullScreenLoader from '../loading/FullScreenLoader';
+import JoystickControl from './JoystickController';
 
 export default function RobotControl({ isConnected }: { isConnected: boolean}) {
   const [photo, setPhoto] = useState<any>('');
@@ -33,6 +34,8 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
   //const [currentMeasurement, setCurrentMeasurement] = useState();
   const measurementId = useSelector((state: RootState) => state.measurementnew.measurementId);
   const user = useSelector((state: RootState) => state.auth.user);
+  const controlStyle = useSelector((state: RootState) => state.settings.controlStyle);
+
 
   let connectionStartTime: number | null = null;
   let curPlantId: number | null = null;
@@ -420,7 +423,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
       >
         <Text style={styles.buttonText}>↓</Text>
       </TouchableOpacity>
-
+      { controlStyle === "keypad" ? (
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={!isAuto ? styles.controlButton : styles.auto_controlButton}
@@ -493,6 +496,9 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
         </TouchableOpacity>
 
       </View>
+      ) : (
+        <JoystickControl onMove={(direction) => sendControlRequest(direction)} />
+      )}
     </View>
   );
 }
