@@ -4,6 +4,7 @@ import { VictoryChart, VictoryBar, VictoryPie, VictoryTheme } from 'victory-nati
 import i18n from '@/translations/i18n';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import GuestPrompt from '../loading/GuestPrompt';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -33,6 +34,7 @@ export const AppStats = () => {
   const [fieldCoverage, setFieldCoverage] = useState([{ x: "Explored", y: 0 }, { x: "Unexplored", y: 1 }]);
   const [measurementRates, setMeasurementRates] = useState([{ x: "Success", y: 0 }, { x: "Failed", y: 1 }]);
   const [loading, setLoading] = useState(true);
+  const [measurementDurations, setMeasurementDurations] = useState<{ x: string; y: number }[]>([]);
 
   if (language === 'English') i18n.locale = 'en';
   else if (language === 'Български') i18n.locale = 'bg';
@@ -53,6 +55,14 @@ export const AppStats = () => {
         const healthy = healthyRes.data;
         const diseased = diseasedRes.data;
 
+        const formattedDurations = measurements
+        .filter(m => m.createdAt && m.duration)
+        .map((m, index) => ({
+          x: `#${index + 1}`,
+          y: m.duration / 60 // convert ms to minutes
+        }));
+        setMeasurementDurations(formattedDurations);
+        console.log("STAT_REACTAPP: "+JSON.stringify(formattedDurations));
         // Field Coverage
         let totalExplored = 0;
         let totalArea = 0;
@@ -95,6 +105,8 @@ export const AppStats = () => {
     fetchStats();
   }, [user]);
 
+  if(!user) return <GuestPrompt feature='view app stats'/>
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>{i18n.t('stats.appStats')}</Text>
@@ -105,7 +117,7 @@ export const AppStats = () => {
         <>
               <Text style={styles.subHeader}>{i18n.t('stats.hours')}</Text>
               <VictoryChart theme={VictoryTheme.material} width={0.9*screenWidth}>
-                <VictoryBar data={sampleStats.controlHours} style={{ data: { fill: "#4caf50" } }} />
+                <VictoryBar data={measurementDurations} style={{ data: { fill: "#4caf50" } }} />
               </VictoryChart>
           {/* Field Coverage */}
           <Text style={styles.subHeader}>{i18n.t('stats.fieldCoverage')}</Text>

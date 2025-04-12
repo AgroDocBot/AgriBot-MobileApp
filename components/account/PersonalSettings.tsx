@@ -70,6 +70,7 @@ export const PersonalSettings = () => {
     }
   };
 
+  if(!user) return <></>;
 
   return (
     <View style={styles.container}>

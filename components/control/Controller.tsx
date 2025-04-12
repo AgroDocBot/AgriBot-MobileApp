@@ -18,6 +18,7 @@ import RNBlobUtil from 'react-native-blob-util';
 import { updateBattery, setLastConnection, setSessionDuration, updateUsage } from '@/redux/batteryUsageSlice';
 import { preventAutoHideAsync } from 'expo-splash-screen/build';
 import PlantDiagnosis from './PlantDiagnosis';
+import FullScreenLoader from '../loading/FullScreenLoader';
 
 export default function RobotControl({ isConnected }: { isConnected: boolean}) {
   const [photo, setPhoto] = useState<any>('');
@@ -366,6 +367,9 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
       console.log('RP5 WebSocket is not open');
     }
   }
+
+  if (rp5Ws?.readyState !== WebSocket.OPEN) return <FullScreenLoader/>
+  
   return (
     <View style={styles.container}>
 

@@ -6,6 +6,8 @@ import AddFieldPopup from './AddFieldPopUp';
 import { useSelector } from 'react-redux';
 import AddMeasurementPopup from './AddMeasurementPopUp';
 import i18n from '@/translations/i18n';
+import ContentLoader from '../loading/ContentLoader';
+import GuestPrompt from '../loading/GuestPrompt';
 
 export default function CardList({ activeTab, searchQuery }: any) {
   const [isPopupVisible, setPopupVisible] = useState(false);
@@ -219,7 +221,10 @@ export default function CardList({ activeTab, searchQuery }: any) {
     }
     return 0;
   });
-      
+  
+  if (!user) return <GuestPrompt feature='manage fields, measurements and diseases'/>
+  if (filteredData.length === 0) return <ContentLoader/>
+
   return (
     <ScrollView style={styles.wrapper}>
       {sortedData.length ? (

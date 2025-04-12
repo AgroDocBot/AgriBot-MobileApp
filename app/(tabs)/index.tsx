@@ -10,6 +10,7 @@ import { setAuthState } from '@/redux/authSlice';
 import { useSelector } from 'react-redux';
 import Home from '@/components/home/HomeScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import FullScreenLoader from '@/components/loading/FullScreenLoader';
 
 export default function HomeScreen() {
 
@@ -17,6 +18,7 @@ export default function HomeScreen() {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
 
   const [isLogged, setIsLogged] = useState<boolean>(false);
@@ -69,6 +71,7 @@ export default function HomeScreen() {
   }, []);
   
   const handleSubmit = async () => {
+    setLoading(true);
     const url = isSignup
       ? 'https://agribot-backend-abck.onrender.com/auth/register'
       : 'https://agribot-backend-abck.onrender.com/auth/login';
@@ -88,9 +91,11 @@ export default function HomeScreen() {
 
       if (response.ok) {
         if (isSignup) {
+          setLoading(false);
           Alert.alert('Success', 'Account created successfully!');
           setIsSignup(false);
         } else {
+          setLoading(false);
           Alert.alert('Success', 'Logged in successfully!');
           console.log('Token:', data.accessToken);
 
@@ -108,10 +113,12 @@ export default function HomeScreen() {
     } catch (error) {
       console.error(error);
       Alert.alert('Error', 'Unable to connect to the server.');
+      setLoading(false);
     }
   };
 
   if(user) return (<Home></Home>)
+  else if(loading) return <FullScreenLoader/>
   else 
   return (
     <ThemedView style={styles.container}>
