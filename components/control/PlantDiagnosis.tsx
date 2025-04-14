@@ -2,10 +2,11 @@ import { View, Text } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import i18n from '@/translations/i18n';
+import { RootState } from '@/redux/store';
 
 const PlantDiagnosis = ({ message }: { message: string }) => {
-    const { language } = useSelector((state: any) => state.settings);
-    const user = useSelector((state: any) => state.auth.user);
+    const { language } = useSelector((state: RootState) => state.settings);
+    const user = useSelector((state: RootState) => state.auth.user);
   
     if (language === 'English') i18n.locale = 'en';
     else if (language === 'Български') i18n.locale = 'bg';

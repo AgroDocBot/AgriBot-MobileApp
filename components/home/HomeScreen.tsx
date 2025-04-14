@@ -27,10 +27,10 @@ const Home = () => {
 ]);
   const [latestDPlants, setLatestDPlants] = useState<any[]>([]);
 
-  let plantsArray: any[] = [];
+  let plantsArray: Array<HealthyPlant | DiseasedPlant> = [];
   const dispatch = useDispatch<AppDispatch>();
 
-  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+  const { language, controlStyle, unitsSystem } = useSelector((state: RootState) => state.settings);
 
   if(language === 'English') i18n.locale = 'en';
   else if(language === 'Български') i18n.locale = 'bg';

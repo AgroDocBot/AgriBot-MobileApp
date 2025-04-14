@@ -6,17 +6,9 @@ import { Modal } from 'react-native';
 import { Dimensions } from 'react-native';
 import i18n from '@/translations/i18n';
 import { useDispatch, useSelector } from 'react-redux';
-
-interface AddMeasurementPopupProps {
-  visible: boolean;
-  onClose: () => void;
-  onSubmit: (measurementData: any) => void;
-  userId: number;
-  initialField: any,
-  mode: "add" | "edit",
-  currentField : String
-}
-
+import { RootState } from '@/redux/store';
+import { FieldType } from '@/constants/types/FieldInterfaces';
+import { AddMeasurementPopupProps } from '@/constants/types/PropsInterfaces';
 
 export default function AddMeasurementPopup({
   visible,
@@ -28,12 +20,12 @@ export default function AddMeasurementPopup({
   currentField
 }: AddMeasurementPopupProps) {
   
-  const [fields, setFields] = useState<any[]>([]);
-  const [selectedField, setSelectedField] = useState();
+  const [fields, setFields] = useState<Array<FieldType>>([]);
+  const [selectedField, setSelectedField] = useState<number>();
 
   const dispatch = useDispatch();
 
-  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+  const { language, controlStyle, unitsSystem } = useSelector((state: RootState) => state.settings);
 
   if(language === 'English') i18n.locale = 'en';
   else if(language === 'Български') i18n.locale = 'bg';
@@ -47,6 +39,10 @@ export default function AddMeasurementPopup({
         .catch((error) => console.error('Error fetching fields:', error));
     }
   }, [userId]);
+
+  useEffect(() => {
+    if(mode === "edit") setSelectedField(initialField.id);
+  }, [visible, initialField])
 
   const handleSubmit = () => {
     if (!selectedField) {
@@ -71,7 +67,7 @@ export default function AddMeasurementPopup({
             <Text style={styles.title}>{mode === 'add' ? i18n.t('add_edit_popup.add') : i18n.t('add_edit_popup.edit')} {i18n.t('add_edit_popup.measurement')}</Text>
             <Picker
               selectedValue={selectedField}
-              onValueChange={(itemValue : any) => setSelectedField(itemValue)}
+              onValueChange={(itemValue : number) => setSelectedField(itemValue)}
               style={styles.picker}>
               <Picker.Item label={i18n.t('add_edit_popup.selectField')} value=""/>
               {fields.map((field) => (

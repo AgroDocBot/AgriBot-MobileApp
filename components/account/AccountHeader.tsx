@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 export const AccountHeader = ({ userPhoto }: { userPhoto?: string }) => {
 
-  const user = useSelector((state: any) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   return (
     <View style={styles.headerContainer}>

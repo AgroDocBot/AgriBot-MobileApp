@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import Home from '@/components/home/HomeScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FullScreenLoader from '@/components/loading/FullScreenLoader';
+import { RootState } from '@/redux/store';
 
 export default function HomeScreen() {
 
@@ -27,7 +28,7 @@ export default function HomeScreen() {
   const slideAnimForm = useRef(new Animated.Value(500)).current;
   const blurAnim = useRef(new Animated.Value(0)).current;
 
-  const user = useSelector((state: any) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
     Animated.timing(slideAnimHeader, {

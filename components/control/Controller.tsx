@@ -20,15 +20,16 @@ import { preventAutoHideAsync } from 'expo-splash-screen/build';
 import PlantDiagnosis from './PlantDiagnosis';
 import FullScreenLoader from '../loading/FullScreenLoader';
 import JoystickControl from './JoystickController';
+import { ReceivedPlantDataD, ReceivedPlantDataH } from '@/constants/types/PlantsInterfaces';
 
 export default function RobotControl({ isConnected }: { isConnected: boolean}) {
-  const [photo, setPhoto] = useState<any>('');
-  const [message, setMessage] = useState('No data');
-  const [isAuto, setAuto] = useState(false);
+  const [photo, setPhoto] = useState<ArrayBuffer | string | null>(null);
+  const [message, setMessage] = useState<string>('No data');
+  const [isAuto, setAuto] = useState<boolean>(false);
   const [esp32Ws, setEsp32Ws] = useState<WebSocket>();
   const [rp5Ws, setRp5Ws] = useState<WebSocket>();
-  const [currentPlant, setCurrentPlant] = useState<any>({isHealthy: false, data: {}});
-  const [latestMessage, setLatestMessage] = useState();
+  const [currentPlant, setCurrentPlant] = useState<{isHealthy: boolean, data: {id: number} | null}>({isHealthy: false, data: null});
+  const [latestMessage, setLatestMessage] = useState<string>();
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
 
   //const [currentMeasurement, setCurrentMeasurement] = useState();
@@ -42,16 +43,6 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  /*useFocusEffect(
-    React.useCallback(() => {
-      const fetchData = async () => {
-        console.log("Getting measurement...")
-        const value = await AsyncStorage.getItem('measurementId');
-        if (value) setCurrentMeasurement(JSON.parse(value));
-      };
-
-      fetchData();
-    }, []))*/
 
     const uploadImageToBackend = async (base64ImageData: Blob) => {
       console.log("Attempting to upload image!");
@@ -85,7 +76,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
             imageUri = await RNBlobUtil.fs.readFile(base64data as string, 'base64');  // Assuming the Blob is a file URI or Base64
           }
       
-          // Now append to FormData
+          // Append to FormData
           console.log("Now appending to frormadaa")
           const formData = new FormData();
           formData.append('image', {
@@ -142,7 +133,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
       
     };
 
-  const collectPlantData = (plantData: any, isHealthy : boolean) => {
+  const collectPlantData = (plantData: ReceivedPlantDataH | ReceivedPlantDataD, isHealthy : boolean) => {
     const endpoint = isHealthy
       ? 'https://agribot-backend-abck.onrender.com/plants/healthy/add'
       : 'https://agribot-backend-abck.onrender.com/plants/diseased/add';
@@ -248,7 +239,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
   }, [rp5Ws]); 
 
   useEffect(() => {
-    const processPlantData = (data: any) => {
+    const processPlantData = (data: string) => {
       let result = JSON.stringify(data);
 
       let s = result.indexOf("Predicted class:");
@@ -270,7 +261,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
       let crop = resClass.split("___")[0] || "Unknown";
       let disease = isHealthy ? undefined : resClass.split("___")[1] || "Unknown";
   
-      const plantData = {
+      const plantData: ReceivedPlantDataH | ReceivedPlantDataD = {
         latitude,
         longitude,
         crop,
@@ -287,7 +278,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
     }
   }, [measurementId, latestMessage]);
 
-  const handleWebSocketMessage = (data: any) => {
+  const handleWebSocketMessage = (data: Blob | string) => {
     if (data instanceof Blob) {
       console.log("image detected");
       const reader = new FileReader();
@@ -379,7 +370,7 @@ export default function RobotControl({ isConnected }: { isConnected: boolean}) {
       <View style={styles.displayBox}>
         <View style={styles.photoBox}>
           {photo ? (
-            <Image source={{ uri: photo }} style={styles.image}/>
+            <Image source={{ uri: photo as string }} style={styles.image}/>
           ) : (
             <Text>No Image</Text>
           )}

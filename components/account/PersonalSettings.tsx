@@ -8,13 +8,14 @@ import { logout } from '../../redux/authSlice';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setAuthState } from '../../redux/authSlice';
+import { RootState } from '@/redux/store';
 
 export const PersonalSettings = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  const { language } = useSelector((state: any) => state.settings);
-  const user = useSelector((state: any) => state.auth.user);
+  const { language } = useSelector((state: RootState) => state.settings);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   if (language === 'English') i18n.locale = 'en';
   else if (language === 'Български') i18n.locale = 'bg';
@@ -52,7 +53,7 @@ export const PersonalSettings = () => {
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          userId: user.id,
+          userId: user?.id,
           newPassword,
         }),
       });
@@ -65,8 +66,13 @@ export const PersonalSettings = () => {
 
       Alert.alert('Success', 'Password changed successfully');
       setNewPassword('');
-    } catch (error : any) {
-      Alert.alert('Error', error.message);
+    } catch (error) {
+      if(error instanceof Error) {
+        Alert.alert('Error', error.message);
+      }
+      else {
+        throw error;
+      }
     }
   };
 

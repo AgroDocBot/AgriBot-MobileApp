@@ -2,10 +2,12 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import i18n from '@/translations/i18n';
 import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import { MenuProps } from '@/constants/types/PropsInterfaces';
 
-export default function Menu({ activeTab, setActiveTab } : any) {
+export default function Menu({ activeTab, setActiveTab } : MenuProps) {
   const tabs = ['fields', 'measurements', 'diseases'];
-  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+  const { language, controlStyle, unitsSystem } = useSelector((state: RootState) => state.settings);
 
   if(language === 'English') i18n.locale = 'en';
   else if(language === 'Български') i18n.locale = 'bg';

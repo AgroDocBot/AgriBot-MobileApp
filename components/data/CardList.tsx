@@ -8,8 +8,10 @@ import AddMeasurementPopup from './AddMeasurementPopUp';
 import i18n from '@/translations/i18n';
 import ContentLoader from '../loading/ContentLoader';
 import GuestPrompt from '../loading/GuestPrompt';
+import { RootState } from '@/redux/store';
+import { FieldData, FieldType, MeasurementFieldData, MeasurementType } from '@/constants/types/FieldInterfaces';
 
-export default function CardList({ activeTab, searchQuery }: any) {
+export default function CardList({ activeTab, searchQuery }: {activeTab: 'fields' | 'measurements' | "diseases", searchQuery: string}) {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [popupMode, setPopupMode] = useState<'add' | 'edit'>('add');
   const [fields, setFields] = useState<any[]>([]);
@@ -19,11 +21,11 @@ export default function CardList({ activeTab, searchQuery }: any) {
 
   const [currentMeasurementField, setCurrentMeasurementField] = useState<any>(null);
 
-  const userId = useSelector((state: any) => state.auth.user?.id);
-  const user = useSelector((state: any) => state.auth.user);
-  const username = useSelector((state: any) => state.auth.user?.username);
+  const userId = useSelector((state: RootState) => state.auth.user?.id);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const username = useSelector((state: RootState) => state.auth.user?.username);
 
-  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+  const { language, controlStyle, unitsSystem } = useSelector((state: RootState) => state.settings);
 
   if(language === 'English') i18n.locale = 'en';
   else if(language === 'Български') i18n.locale = 'bg';
@@ -59,10 +61,10 @@ export default function CardList({ activeTab, searchQuery }: any) {
     //console.log(diseases)
   }, [userId, username, fields]);
 
-  const handleAdd = (fieldData: any) => {
-    console.log("Current user: "+user.username);
-    console.log("Current User ID: " + user.id);
-    const curId = user.id;
+  const handleAdd = (fieldData: FieldData) => {
+    console.log("Current user: "+user?.username);
+    console.log("Current User ID: " + user?.id);
+    const curId = user?.id;
     console.log("Added id: "+curId);
     fetch('https://agribot-backend-abck.onrender.com/fields/create', {
       method: 'POST',
@@ -87,7 +89,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
       .catch((error) => console.error('Error adding field:', error));
   };
 
-  const handleEdit = (fieldData: any) => {
+  const handleEdit = (fieldData: FieldData) => {
     fetch(`https://agribot-backend-abck.onrender.com/fields/edit`, {
       method: 'PUT',
       headers: {
@@ -101,7 +103,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
         area: fieldData.area,
         latitude: fieldData.location.latitude,
         longitude: fieldData.location.longitude,
-        userId: user.id,
+        userId: user?.id,
       }),
     })
       .then((response) => response.json())
@@ -117,7 +119,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
       .catch((error) => console.error('Error editing field:', error));
   };
 
-  const handleDelete = (fieldData: any) => {
+  const handleDelete = (fieldData: FieldData) => {
     fetch(`https://agribot-backend-abck.onrender.com/fields/delete`, {
       method: 'DELETE',
       headers: {
@@ -136,7 +138,8 @@ export default function CardList({ activeTab, searchQuery }: any) {
       .catch((error) => console.error('Error deleting field:', error));
   };
 
-  const handleAddMeasurement = (measurementData: any) => {
+  const handleAddMeasurement = (measurementData: {fieldId: number}) => {
+    console.log("RETURNED_MEASUREMENT_DATA: "+JSON.stringify(measurementData));
     fetch('https://agribot-backend-abck.onrender.com/measurements/create', {
       method: 'POST',
       headers: {
@@ -154,7 +157,8 @@ export default function CardList({ activeTab, searchQuery }: any) {
       .catch((error) => console.error('Error adding measurement:', error));
   };
 
-  const handleEditMeasurement = (measurementData: any) => {
+  const handleEditMeasurement = (measurementData: MeasurementType) => {
+    console.log("EDIT_MEASUREMENT_DATA: "+JSON.stringify(measurementData));
     fetch(`https://agribot-backend-abck.onrender.com/measurements/edit`, {
       method: 'PUT',
       headers: {
@@ -176,7 +180,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
       .catch((error) => console.error('Error editing measurement:', error));
   };
 
-  const handleDeleteMeasurement = (measurementData: any) => {
+  const handleDeleteMeasurement = (measurementData: MeasurementType) => {
     fetch(`https://agribot-backend-abck.onrender.com/measurements/delete`, {
       method: 'DELETE',
       headers: {
@@ -233,11 +237,12 @@ export default function CardList({ activeTab, searchQuery }: any) {
             key={item.id}
             data={item}
             activeTab={activeTab}
-            onEdit={(data: any, currentField : any) => {
+            onEdit={(data: any, currentField : FieldType) => {
               setEditData(data);
               setPopupMode('edit');
               setPopupVisible(true);
               setCurrentMeasurementField(currentField);
+              console.log("PASSED_EDIT_DATA: "+JSON.stringify(editData));
             }}
             onRemove={activeTab === 'measurements' ? handleDeleteMeasurement : handleDelete}
             fields={fields}
@@ -287,7 +292,7 @@ export default function CardList({ activeTab, searchQuery }: any) {
           visible={isPopupVisible}
           onClose={() => setPopupVisible(false)}
           onSubmit={popupMode === 'add' ? handleAddMeasurement : handleEditMeasurement}
-          userId={userId}
+          userId={userId!}
           initialField={editData}
           mode={popupMode}
           currentField={currentMeasurementField}

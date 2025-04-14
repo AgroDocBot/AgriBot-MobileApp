@@ -8,6 +8,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { Image } from 'react-native';
 import DiseaseModalContent from './DiseaseModalContent';
+import { DiseaseType } from '@/constants/types/DiseaseInterfaces';
+import { FieldType, MeasurementFieldData } from '@/constants/types/FieldInterfaces';
 
 interface CustomModalProps {
   visible: boolean;
@@ -20,7 +22,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
 
   const [plantsSet, setPlantsSet] = useState<Array<DiseasedPlant> | null>([]);
   const [fieldPlantSet, setFieldPlantSet] = useState<Array<DiseasedPlant | null>>([]);
-  const [diseaseData, setDiseaseData] = useState<any>(null);
+  const [diseaseData, setDiseaseData] = useState<DiseaseType | null>(null);
 
   const user = useSelector((state: RootState) => state.auth.user);
 
@@ -76,9 +78,9 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
             <Text style={styles.modalText}>Diseased Plants:</Text>
             {fieldPlantSet ? (
                 <ScrollView>
-                {fieldPlantSet?.slice(0, 6).map((plant: any) => (
+                {fieldPlantSet?.slice(0, 6).map((plant: DiseasedPlant | null) => (
                   <>
-                    <MeasurementCard key={plant.id} plant={plant} />
+                    <MeasurementCard key={plant?.id} plant={plant!} />
                   </>
                 ))}
               </ScrollView>
@@ -113,7 +115,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
             </View>
             <Text style={styles.modalText}>Recent Plants:</Text>
             <ScrollView>
-              {plantsSet?.map((plant: any) => (
+              {plantsSet?.map((plant: DiseasedPlant) => (
                 <>
                   <MeasurementCard key={plant.id} plant={plant} />
                 </>
@@ -128,7 +130,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
         return (
           <>
             <ScrollView>
-              <DiseaseModalContent disease={diseaseData}/>
+              <DiseaseModalContent disease={diseaseData!}/>
             </ScrollView>
           </>
         )

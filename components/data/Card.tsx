@@ -11,10 +11,12 @@ import { AppDispatch } from '@/redux/store';
 import { RootState } from '@/redux/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { formatPercent, formatSeconds } from './Formating';
+import { FieldType, MeasurementType } from '@/constants/types/FieldInterfaces';
+import { CardProps } from '@/constants/types/PropsInterfaces';
 
 const socket = io("wss://agribot-backend-abck.onrender.com")
 
-export default function Card({ data, activeTab, onEdit, onRemove, fields, measurements }: any) {
+export default function Card({ data, activeTab, onEdit, onRemove, fields, measurements }: CardProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [measurementRunning, setMeasurementRunning] = useState<boolean>(false);
 
@@ -98,10 +100,10 @@ export default function Card({ data, activeTab, onEdit, onRemove, fields, measur
   const updateCoverage = async () => {
     if (!data || !data.fieldId || !data.id) return;
   
-    const field = fields.find((f: any) => f.id === data.fieldId);
+    const field = fields.find((f: FieldType) => f.id === data.fieldId);
     if (!field) return;
   
-    const fieldMeasurements = measurements.filter((m: any) => m.fieldId === data.fieldId);
+    const fieldMeasurements = measurements.filter((m: MeasurementType) => m.fieldId === data.fieldId);
     const numberOfMeasurements = fieldMeasurements.length;
   
     const explored = (numberOfMeasurements) / field.area;
@@ -181,7 +183,7 @@ export default function Card({ data, activeTab, onEdit, onRemove, fields, measur
         return (
           <>
             <View style={styles.title_buttonWrapper}>
-              <Text style={styles.cardTitle}>{fields.find(field => field.id === data.fieldId).fieldname}</Text>
+              <Text style={styles.cardTitle}>{fields.find(field => field.id === data.fieldId)!.fieldname}</Text>
               <TouchableOpacity onPress={() => {toggleMeasurement()}} style={styles.playButton}>
                 <Ionicons name={measurementRunning ? 'pause' : 'play'} size={30} color="#fff" />
               </TouchableOpacity>
@@ -222,7 +224,7 @@ export default function Card({ data, activeTab, onEdit, onRemove, fields, measur
     <View style={[styles.card, styles[`${activeTab}Card`]]}>
       <TouchableOpacity onPress={() => openModal()}>{renderContent()}</TouchableOpacity>
       <View style={styles.actionButtons}>
-        <TouchableOpacity onPress={() => onEdit(data, fields.find(field => field.id === data.fieldId))}>
+        <TouchableOpacity onPress={() => onEdit(data, fields.find(field => field.id === data.fieldId)!)}>
           <Ionicons name="create-outline" size={24} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => onRemove(data)}>

@@ -17,4 +17,19 @@ interface DiseasedPlant {
     measurementId: number
 }
 
-export {HealthyPlant, DiseasedPlant}
+interface ReceivedPlantDataH {
+    latitude: string,
+    longitude: string,
+    crop: string,
+    measurementId: number
+}
+
+interface ReceivedPlantDataD {
+    latitude: number,
+    longitude: number,
+    crop: string,
+    measurementId: number | null,
+    disease?: string
+}
+
+export {HealthyPlant, DiseasedPlant, ReceivedPlantDataD, ReceivedPlantDataH}

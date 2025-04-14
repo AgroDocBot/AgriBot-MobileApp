@@ -5,31 +5,13 @@ import i18n from '@/translations/i18n';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import GuestPrompt from '../loading/GuestPrompt';
+import { RootState } from '@/redux/store';
 
 const screenWidth = Dimensions.get('window').width;
 
-
-const sampleStats = {
-  controlHours: [
-    { x: "Jan", y: 10 },
-    { x: "Feb", y: 20 },
-    { x: "Mar", y: 30 },
-    { x: "Apr", y: 40 },
-    { x: "May", y: 50 },
-  ],
-  fieldCoverage: [
-    { x: "Explored", y: 70 },
-    { x: "Unexplored", y: 30 },
-  ],
-  measurements: [
-    { x: "Success", y: 80 },
-    { x: "Failed", y: 20 },
-  ],
-};
-
 export const AppStats = () => {
-  const { language } = useSelector((state: any) => state.settings);
-  const { user } = useSelector((state: any) => state.auth); // assuming user object contains id and username
+  const { language } = useSelector((state: RootState) => state.settings);
+  const { user } = useSelector((state: RootState) => state.auth); // assuming user object contains id and username
 
   const [fieldCoverage, setFieldCoverage] = useState([{ x: "Explored", y: 0 }, { x: "Unexplored", y: 1 }]);
   const [measurementRates, setMeasurementRates] = useState([{ x: "Success", y: 0 }, { x: "Failed", y: 1 }]);
@@ -44,10 +26,10 @@ export const AppStats = () => {
     const fetchStats = async () => {
       try {
         const [fieldsRes, measurementsRes, healthyRes, diseasedRes] = await Promise.all([
-          axios.get(`https://agribot-backend-abck.onrender.com/fields/getfields/${user.id}`),
-          axios.get(`https://agribot-backend-abck.onrender.com/measurements/read/${user.username}`),
-          axios.get(`https://agribot-backend-abck.onrender.com/plants/healthy/user/${user.id}`),
-          axios.get(`https://agribot-backend-abck.onrender.com/plants/diseased/user/${user.id}`),
+          axios.get(`https://agribot-backend-abck.onrender.com/fields/getfields/${user?.id}`),
+          axios.get(`https://agribot-backend-abck.onrender.com/measurements/read/${user?.username}`),
+          axios.get(`https://agribot-backend-abck.onrender.com/plants/healthy/user/${user?.id}`),
+          axios.get(`https://agribot-backend-abck.onrender.com/plants/diseased/user/${user?.id}`),
         ]);
 
         const fields = fieldsRes.data;

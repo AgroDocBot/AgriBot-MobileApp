@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { DiseaseType } from '@/constants/types/DiseaseInterfaces';
 
-export default function DiseaseModalContent({ disease }: { disease: any }) {
+export default function DiseaseModalContent({ disease }: { disease: DiseaseType }) {
 
   const tags: Array<string> = disease.affectedParts?.split(',');
 

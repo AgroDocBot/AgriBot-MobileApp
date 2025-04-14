@@ -4,10 +4,11 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLanguage, toggleControlStyle, toggleUnitsSystem } from '../../redux/settingsSlice';
 import i18n from '@/translations/i18n';
+import { RootState } from '@/redux/store';
 
 export const SettingsSection = () => {
   const dispatch = useDispatch();
-  const { language, controlStyle, unitsSystem } = useSelector((state: any) => state.settings);
+  const { language, controlStyle, unitsSystem } = useSelector((state: RootState) => state.settings);
 
   const [languageDropdown, setLanguageDropdown] = useState<boolean>(false);
   const [controlStyleDropdown, setControlStyleDropdown] = useState<boolean>(false);
