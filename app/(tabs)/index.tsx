@@ -30,6 +30,7 @@ export default function HomeScreen() {
 
   const user = useSelector((state: RootState) => state.auth.user);
 
+    // useEffect for implementing animations for the Login/Register screen
   useEffect(() => {
     Animated.timing(slideAnimHeader, {
       toValue: 0,
@@ -51,6 +52,7 @@ export default function HomeScreen() {
     }).start();
   }, [user]);
 
+  // useEffect used for managing user login session (checks if there is a saved token)
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
@@ -70,7 +72,8 @@ export default function HomeScreen() {
   
     checkAuthStatus();
   }, []);
-  
+
+  // Function used for both login and register
   const handleSubmit = async () => {
     setLoading(true);
     const url = isSignup
@@ -98,7 +101,6 @@ export default function HomeScreen() {
         } else {
           setLoading(false);
           Alert.alert('Success', 'Logged in successfully!');
-          console.log('Token:', data.accessToken);
 
           await AsyncStorage.setItem('authToken', data.accessToken);
           await AsyncStorage.setItem('user', JSON.stringify(data.user));
@@ -106,7 +108,6 @@ export default function HomeScreen() {
           setIsLogged(true);
 
           dispatch(setAuthState({ token: data.accessToken, user: data.user }));
-          console.log("User: "+user);
         }
       } else {
         Alert.alert('Error', data.message || 'Something went wrong.');
@@ -118,6 +119,7 @@ export default function HomeScreen() {
     }
   };
 
+  // Conditional rendering depending on the presence of authenticated user and loading state
   if(user) return (<Home></Home>)
   else if(loading) return <FullScreenLoader/>
   else 

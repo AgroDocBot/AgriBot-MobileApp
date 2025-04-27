@@ -10,6 +10,7 @@ import ContentLoader from '../loading/ContentLoader';
 import GuestPrompt from '../loading/GuestPrompt';
 import { RootState } from '@/redux/store';
 import { FieldData, FieldType, MeasurementFieldData, MeasurementType } from '@/constants/types/FieldInterfaces';
+import SupportedCropsModal from './SupportedCropsModal';
 
 export default function CardList({ activeTab, searchQuery }: {activeTab: 'fields' | 'measurements' | "diseases", searchQuery: string}) {
   const [isPopupVisible, setPopupVisible] = useState(false);
@@ -18,6 +19,13 @@ export default function CardList({ activeTab, searchQuery }: {activeTab: 'fields
   const [measurements, setMeasurements] = useState<any[]>([]);
   const [diseases, setDiseases] = useState<any[]>([]);
   const [editData, setEditData] = useState<any>(null);
+
+  // State for determining whether the loading screen should be displayed
+  const [loadingFields, setLoadingFields] = useState(true);
+  const [loadingMeasurements, setLoadingMeasurements] = useState(true);
+  const [loadingDiseases, setLoadingDiseases] = useState(true);
+
+  const [isPlantModalVisible, setPlantModalVisible] = useState(false);
 
   const [currentMeasurementField, setCurrentMeasurementField] = useState<any>(null);
 
@@ -42,7 +50,8 @@ export default function CardList({ activeTab, searchQuery }: {activeTab: 'fields
       })
         .then((response) => response.json())
         .then((data) => setFields(data))
-        .catch((error) => console.error('Error fetching fields:', error));
+        .catch((error) => console.error('Error fetching fields:', error))
+        .finally(() => setLoadingFields(false));
     }
 
     if (username) {
@@ -51,13 +60,15 @@ export default function CardList({ activeTab, searchQuery }: {activeTab: 'fields
       })
         .then((response) => response.json())
         .then((data) => setMeasurements(data))
-        .catch((error) => console.error('Error fetching measurements:', error));
+        .catch((error) => console.error('Error fetching measurements:', error))
+        .finally(() => setLoadingMeasurements(false));
     }
 
     fetch(`https://agribot-backend-abck.onrender.com/diseases/all`, { method: 'GET' })
       .then((response) => response.json())
       .then((data) => setDiseases(data))
-      .catch((error) => console.error('Error fetching diseases:', error));
+      .catch((error) => console.error('Error fetching diseases:', error))
+      .finally(() => setLoadingDiseases(false));
     //console.log(diseases)
   }, [userId, username, fields]);
 
@@ -225,12 +236,32 @@ export default function CardList({ activeTab, searchQuery }: {activeTab: 'fields
     }
     return 0;
   });
+
+  const supportedCrops = [
+    { id: '1', name: i18n.t("classification.crops.Pepperbell"), latinName: 'Capsicum annuum', imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVYKU6BuIusO1cSMmhBajVkzSg3LahtKdBdQ&s' },
+    { id: '2', name: i18n.t("classification.crops.Corn"), latinName: 'Zea mays', imageUrl: 'https://plantura.garden/uk/wp-content/uploads/sites/2/2022/04/corn-cob.jpg' },
+    { id: '3', name: i18n.t("classification.crops.Tomato"), latinName: 'Solanum lycopersicum', imageUrl: 'https://www.lacostegardencentre.com/files/images/news/how-to-grow-tomatoes-1000x666-65ead2e671f5b_og.jpg' },
+  ];
   
   if (!user) return <GuestPrompt feature='manage fields, measurements and diseases'/>
-  if (filteredData.length === 0) return <ContentLoader/>
+
+  const isLoading = 
+  (activeTab === 'fields' && loadingFields) ||
+  (activeTab === 'measurements' && loadingMeasurements) ||
+  (activeTab === 'diseases' && loadingDiseases);
+
+  if (isLoading) return <ContentLoader />;
 
   return (
     <ScrollView style={styles.wrapper}>
+      {activeTab === 'diseases' && (
+        <TouchableOpacity
+          style={styles.plantsButton}
+          onPress={() => setPlantModalVisible(true)}
+        >
+          <Text style={styles.plantsButtonText}>{i18n.t('classification.supportedCrops')}</Text>
+        </TouchableOpacity>
+      )}
       {sortedData.length ? (
         sortedData.map((item: any, index: number) => (
           <Card
@@ -298,6 +329,13 @@ export default function CardList({ activeTab, searchQuery }: {activeTab: 'fields
           currentField={currentMeasurementField}
         />
       )}
+
+      <SupportedCropsModal
+        visible={isPlantModalVisible}
+        onClose={() => setPlantModalVisible(false)}
+        crops={supportedCrops}
+      />
+
     </ScrollView>
   );
 }
@@ -315,6 +353,19 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     height: screenHeight * 0.75
-  }
+  },
+  plantsButton: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 8,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  
+  plantsButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 24
+  },
 });
 

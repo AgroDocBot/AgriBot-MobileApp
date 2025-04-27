@@ -7,6 +7,7 @@ export const AccountHeader = ({ userPhoto }: { userPhoto?: string }) => {
 
   const user = useSelector((state: RootState) => state.auth.user);
 
+  // Displays username and avatar
   return (
     <View style={styles.headerContainer}>
       <Image source={ require('../../assets/images/account_profile_user_avatar_icon_219236.png') } style={styles.avatar} />

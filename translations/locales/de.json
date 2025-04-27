@@ -92,6 +92,7 @@
         "Soybean": "Sojabohne",
         "Strawberry": "Erdbeere",
         "Tomato": "Tomate"
-      }
+      },
+      "supportedCrops": "Pflanzarten"
     }
   }

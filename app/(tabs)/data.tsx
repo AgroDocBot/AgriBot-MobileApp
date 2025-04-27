@@ -7,11 +7,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 
 export default function DataScreen() {
-  const [activeTab, setActiveTab] = useState('fields');
+  const [activeTab, setActiveTab] = useState<"fields" | "measurements" | "diseases">('fields');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const dispatch = useDispatch();
-
+  // Initialization of chosen language pack
   const { language, controlStyle, unitsSystem } = useSelector((state: RootState) => state.settings);
 
   if(language === 'English') i18n.locale = 'en';

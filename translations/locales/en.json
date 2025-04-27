@@ -129,6 +129,7 @@
         "Strawberry": "Strawberry",
         "Tomato": "Tomato",
         "No": "No"
-      }
+      },
+      "supportedCrops": "Supported crop plants"
     }
   }

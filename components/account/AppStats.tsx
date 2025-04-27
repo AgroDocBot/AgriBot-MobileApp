@@ -6,12 +6,13 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import GuestPrompt from '../loading/GuestPrompt';
 import { RootState } from '@/redux/store';
+import { MeasurementType } from '@/constants/types/FieldInterfaces';
 
 const screenWidth = Dimensions.get('window').width;
 
 export const AppStats = () => {
   const { language } = useSelector((state: RootState) => state.settings);
-  const { user } = useSelector((state: RootState) => state.auth); // assuming user object contains id and username
+  const { user } = useSelector((state: RootState) => state.auth); // Assuming user object contains id and username
 
   const [fieldCoverage, setFieldCoverage] = useState([{ x: "Explored", y: 0 }, { x: "Unexplored", y: 1 }]);
   const [measurementRates, setMeasurementRates] = useState([{ x: "Success", y: 0 }, { x: "Failed", y: 1 }]);
@@ -33,7 +34,7 @@ export const AppStats = () => {
         ]);
 
         const fields = fieldsRes.data;
-        const measurements : Array<any> = measurementsRes.data;
+        const measurements : Array<MeasurementType> = measurementsRes.data;
         const healthy = healthyRes.data;
         const diseased = diseasedRes.data;
 
@@ -41,7 +42,7 @@ export const AppStats = () => {
         .filter(m => m.createdAt && m.duration)
         .map((m, index) => ({
           x: `#${index + 1}`,
-          y: m.duration / 60 // convert ms to minutes
+          y: m.duration / 60 // Convert ms to minutes
         }));
         setMeasurementDurations(formattedDurations);
         console.log("STAT_REACTAPP: "+JSON.stringify(formattedDurations));

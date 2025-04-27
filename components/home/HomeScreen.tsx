@@ -9,22 +9,11 @@ import { useEffect } from "react";
 import { RootState } from "@/redux/store";
 import type { AppDispatch } from '@/redux/store';
 import type { HealthyPlant, DiseasedPlant } from "@/constants/types/PlantsInterfaces";
+import EmptyState from "./NoPlantsView";
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState("Last plants");
-  const [latestHPlants, setLatestHPlants] = useState<any[]>([
-
-    {
-        id:123,
-        latitude:"42",
-        longitude:"21",
-        crop:"Net ",
-        disease:"lotch (Pyrenophora teres)",
-        imageUrl:"https://res.cloudinary.com/dfdga8pr1/image/upload/v1742508929/s4d9l1ymz59plwlmsdin.jpg",
-        measurementId:23
-    }
-
-]);
+  const [latestHPlants, setLatestHPlants] = useState<any[]>([]);
   const [latestDPlants, setLatestDPlants] = useState<any[]>([]);
 
   let plantsArray: Array<HealthyPlant | DiseasedPlant> = [];
@@ -101,6 +90,7 @@ const Home = () => {
         </TouchableOpacity>
       </View>
       
+      { (latestDPlants.length > 0 && latestHPlants.length > 0) ? (
       <View style={styles.plantImagesContainer}>
         {activeTab === "Last plants" ? (
           <>
@@ -115,7 +105,9 @@ const Home = () => {
             ))}
           </>       
           )}
-      </View>
+      </View>) : (
+        <EmptyState/>
+      )}
     </ScrollView>
   );
 };
@@ -132,7 +124,7 @@ const styles = StyleSheet.create({
   iconContainer: { flexDirection: "row", gap: 16 },
   title: { fontSize: 24, fontWeight: "bold", marginBottom: 4, color: "#F3F3F3" },
   subtitle: { fontSize: 24, fontWeight: "bold", color: "#8F8F8F" },
-  card: { backgroundColor: "#4CAF50",  borderRadius: 16, padding: 16, marginTop: 16, paddingLeft: 0},
+  card: { backgroundColor: "#4CAF50",  borderRadius: 16, padding: 16, marginTop: 16, paddingLeft: 0, minHeight: 225},
   cardImage: { width: "80%", height: 225, borderRadius: 12, marginLeft: -30 },
   cardInfo: { position: "absolute", top: 16, right: 16, backgroundColor: "#24292e", padding: 8, borderRadius: 8 },
   cardTitle: { fontSize: 14, fontWeight: "bold", color: "#F3F3F3" },

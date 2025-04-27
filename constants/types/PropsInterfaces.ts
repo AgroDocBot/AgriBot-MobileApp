@@ -11,8 +11,8 @@ interface AddMeasurementPopupProps {
 }
 
 interface MenuProps {
-    activeTab: string,
-    setActiveTab: (tab: string) => void,
+    activeTab: "fields" | "measurements" | "diseases",
+    setActiveTab: (tab: "fields" | "measurements" | "diseases") => void,
 }
 
 interface AddFieldPopupProps {

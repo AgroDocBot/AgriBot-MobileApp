@@ -26,6 +26,7 @@ export const PersonalSettings = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   async function handleLogout() {
+    // Clearing token and user data upon logout
     await AsyncStorage.removeItem('authToken');
     await AsyncStorage.removeItem('user');
     dispatch(logout());

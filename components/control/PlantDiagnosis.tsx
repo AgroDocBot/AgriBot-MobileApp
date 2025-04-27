@@ -16,14 +16,14 @@ const PlantDiagnosis = ({ message }: { message: string }) => {
     const cleanAndTranslateMessage = (message: string) => {
         if (!message) return '';
 
-        // Step 1: Normalize the message (replace underscores and remove extra characters)
-        let cleanMessage = message.replace(/___/g, ' ')  // Replace triple underscores
-                                  .replace(/_/g, ' ')   // Replace single underscores
+        // Normalize the message (replace underscores and remove extra characters)
+        let cleanMessage = message.replace(/___/g, ' ')
+                                  .replace(/_/g, ' ')
                                   .replace(/_\(/g, '')
                                   .replace(/,_/g, '')
                                   .trim(); 
 
-        // Step 2: Extract the crop and disease
+        // Extract the crop and disease
         let parts = cleanMessage.split(' ');
         if (parts.length < 2) {
             return i18n.t('diseases.Healthy'); // Handle healthy cases
@@ -42,7 +42,7 @@ const PlantDiagnosis = ({ message }: { message: string }) => {
             crop = cropMapping[crop];
         }
 
-        // Step 3: Translate using i18n keys
+        // Translate using i18n keys
         const translatedCrop = i18n.t(`classification.crops.${crop}`); // Default to crop name if not found
         const translatedDisease = i18n.t(`classification.diseases.${disease}`); // Default to disease name if not found
 
@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 20,
         borderRadius: 5,
       },
 })

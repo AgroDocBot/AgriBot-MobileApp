@@ -4,6 +4,7 @@ import i18n from '@/translations/i18n';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { MenuProps } from '@/constants/types/PropsInterfaces';
+import { Dimensions } from 'react-native';
 
 export default function Menu({ activeTab, setActiveTab } : MenuProps) {
   const tabs = ['fields', 'measurements', 'diseases'];
@@ -28,7 +29,10 @@ export default function Menu({ activeTab, setActiveTab } : MenuProps) {
   );
 }
 
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
+  
   menu: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -38,6 +42,10 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#444',
     borderRadius: 5,
+    minWidth: 0.25*screenWidth,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   activeTab: {
     backgroundColor: '#666',
