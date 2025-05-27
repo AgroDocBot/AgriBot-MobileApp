@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { formatPercent, formatSeconds } from './Formating';
 import { FieldType, MeasurementType } from '@/constants/types/FieldInterfaces';
 import { CardProps } from '@/constants/types/PropsInterfaces';
+import { Alert } from 'react-native';
 
 const socket = io("wss://agribot-backend-abck.onrender.com")
 
@@ -213,7 +214,7 @@ export default function Card({ data, activeTab, onEdit, onRemove, fields, measur
                 size={16}
                 color={data.encountered ? 'red' : 'green'}
               />{' '}
-              Encountered: {data.encountered ? 'Yes' : 'No'}
+              {i18n.t("classification.encountered")}: {data.encountered ? i18n.t("classification.yes") : i18n.t("classification.no")}
             </Text>
           </>
         );
@@ -224,12 +225,30 @@ export default function Card({ data, activeTab, onEdit, onRemove, fields, measur
     <View style={[styles.card, styles[`${activeTab}Card`]]}>
       <TouchableOpacity onPress={() => openModal()}>{renderContent()}</TouchableOpacity>
       <View style={styles.actionButtons}>
-        <TouchableOpacity onPress={() => onEdit(data, fields.find(field => field.id === data.fieldId)!)}>
-          <Ionicons name="create-outline" size={24} color="#fff" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => onRemove(data)}>
-          <Ionicons name="trash-outline" size={24} color="#fff" />
-        </TouchableOpacity>
+        {  activeTab !== "diseases" &&
+          (<><TouchableOpacity onPress={() => onEdit(data, fields.find(field => field.id === data.fieldId)!)}>
+            <Ionicons name="create-outline" size={24} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              Alert.alert(
+                i18n.t("alert.confirm"),
+                i18n.t("alert.you_sure"),
+                [
+                  { text: i18n.t("alert.cancel"), style: 'cancel' },
+                  {
+                    text: i18n.t("alert.yes"),
+                    style: 'destructive',
+                    onPress: () => onRemove(data),
+                  },
+                ],
+                { cancelable: true }
+              )
+            }
+          >
+            <Ionicons name="trash-outline" size={24} color="#fff" />
+          </TouchableOpacity></>)
+        }
       </View>
 
       <CustomModal

@@ -10,6 +10,7 @@ import { Image } from 'react-native';
 import DiseaseModalContent from './DiseaseModalContent';
 import { DiseaseType } from '@/constants/types/DiseaseInterfaces';
 import { FieldType, MeasurementFieldData } from '@/constants/types/FieldInterfaces';
+import i18n from '@/translations/i18n';
 
 interface CustomModalProps {
   visible: boolean;
@@ -25,6 +26,12 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
   const [diseaseData, setDiseaseData] = useState<DiseaseType | null>(null);
 
   const user = useSelector((state: RootState) => state.auth.user);
+
+  const { language, controlStyle, unitsSystem } = useSelector((state: RootState) => state.settings);
+
+  if(language === 'English') i18n.locale = 'en';
+  else if(language === 'Български') i18n.locale = 'bg';
+  else i18n.locale = 'de';
 
   useEffect(() => {
     //differentiating between measurements and fields based on their properties (measurements have fieldId, where fields have ownerId)
@@ -66,7 +73,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
           <>
             <Text style={styles.modalTitle}>{data.fieldname}</Text>
             <Text style={styles.modalText}>
-              <Ionicons name="leaf-outline" size={16} color="#fff" /> Crops: {data.crop}
+              <Ionicons name="leaf-outline" size={16} color="#fff" /> {i18n.t("modals.crops")}: {data.crop}
             </Text>
             <View style={styles.mapContainer}>
               <WebView
@@ -75,7 +82,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
                 injectedJavaScript={`window.postMessage(${JSON.stringify({ lat: data.latitude, lng: data.longitude })}, "*");`}
               />
             </View>
-            <Text style={styles.modalText}>Diseased Plants:</Text>
+            <Text style={styles.modalText}>{i18n.t("modals.diseased_plants")}:</Text>
             {fieldPlantSet ? (
                 <ScrollView>
                 {fieldPlantSet?.slice(0, 6).map((plant: DiseasedPlant | null) => (
@@ -85,7 +92,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
                 ))}
               </ScrollView>
             ) : (
-              <Text style={styles.modalText}>No diseased plants found.</Text>
+              <Text style={styles.modalText}>{i18n.t("modals.no_diseased_plants")}</Text>
             )}
           </>
         );
@@ -93,9 +100,9 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
       case 'measurements':
         return (
           <>
-            <Text style={styles.modalTitle}>Measurement - {data.createdAt.substring(0, 10)}</Text>
+            <Text style={styles.modalTitle}>{i18n.t('modals.measurement')} - {data.createdAt.substring(0, 10)}</Text>
             <Text style={styles.modalText}>
-              <Ionicons name="location-outline" size={16} color="#fff" /> Field: {data.fieldId}
+              <Ionicons name="location-outline" size={16} color="#fff" /> {i18n.t("modals.field")}: {data.fieldId}
             </Text>
             <View style={styles.mapContainer}>
               <WebView
@@ -113,7 +120,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
                 `}
               />
             </View>
-            <Text style={styles.modalText}>Recent Plants:</Text>
+            <Text style={styles.modalText}>{i18n.t("modals.recent_plants")}:</Text>
             <ScrollView>
               {plantsSet?.map((plant: DiseasedPlant) => (
                 <>
@@ -136,7 +143,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, data, activ
         )
 
       default:
-        return <Text style={styles.modalText}>No data available.</Text>;
+        return <Text style={styles.modalText}>{i18n.t('modals.no_data')}</Text>;
     }
   };
 

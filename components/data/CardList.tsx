@@ -241,6 +241,8 @@ export default function CardList({ activeTab, searchQuery }: {activeTab: 'fields
     { id: '1', name: i18n.t("classification.crops.Pepperbell"), latinName: 'Capsicum annuum', imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVYKU6BuIusO1cSMmhBajVkzSg3LahtKdBdQ&s' },
     { id: '2', name: i18n.t("classification.crops.Corn"), latinName: 'Zea mays', imageUrl: 'https://plantura.garden/uk/wp-content/uploads/sites/2/2022/04/corn-cob.jpg' },
     { id: '3', name: i18n.t("classification.crops.Tomato"), latinName: 'Solanum lycopersicum', imageUrl: 'https://www.lacostegardencentre.com/files/images/news/how-to-grow-tomatoes-1000x666-65ead2e671f5b_og.jpg' },
+    { id: '4', name: i18n.t("classification.crops.Potato"), latinName: 'Solanum tuberosum', imageUrl: 'https://cdn.mos.cms.futurecdn.net/Ys52dqtT4fLt6m3rpRLdxm.jpg' },
+    { id: '5', name: i18n.t("classification.crops.Raspberry"), latinName: 'Rubus idaeus', imageUrl: 'https://www.fs.usda.gov/database/feis/plants/shrub/rubida/fruits.jpg' }
   ];
   
   if (!user) return <GuestPrompt feature='manage fields, measurements and diseases'/>

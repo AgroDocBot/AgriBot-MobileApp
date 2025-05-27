@@ -75,7 +75,7 @@ const Home = () => {
         <Image source={require("@/assets/images/robot.png")} style={styles.cardImage} />
         <View style={styles.cardInfo}>
           <Text style={styles.cardTitle}>AgriBot</Text>
-          <Text style={styles.cardSubtitle}>{i18n.t("home.lastUsed")}: 12 {i18n.t("home.daysAgo")}</Text>
+          <Text style={styles.cardSubtitle}>{i18n.t("home.lastUsed")}: 0 {i18n.t("home.daysAgo")}</Text>
           <Text style={styles.cardTemp}><Ionicons name="battery-full" size={36} color="white" /> {battery}</Text>
           <Text style={styles.cardLight}>🔴 {i18n.t("home.disconnected")}</Text>
         </View>

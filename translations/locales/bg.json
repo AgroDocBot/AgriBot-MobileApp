@@ -13,7 +13,11 @@
       "appStats": "Статистики на приложението",
       "hours": "Брой часове, през които е контролиран роботът",
       "fieldCoverage": "Покритие на полетата",
-      "measurementRates": "Резултати от измерванията"
+      "measurementRates": "Резултати от измерванията",
+      "explored": "Проучена площ",
+      "unexplored": "Непроучена площ",
+      "success": "Здрави",
+      "failed": "Болни"
     },
     "personal": {
       "personalSettings": "Настройки на профила",
@@ -21,7 +25,9 @@
       "logout": "Изход",
       "newPassword": "Нова парола",
       "confirmNewPassword": "Потвърждение на новата парола",
-      "updatePassword": "Променяне на паролата"
+      "updatePassword": "Променяне на паролата",
+      "user": "Потребител",
+      "guest": "Гост"
     },
     "measurements": {
       "date": "Дата",
@@ -66,21 +72,20 @@
     },
     "classification": {
         "diseases": {
-          "Cercospora Leaf Spot": "Петниста листна плесен",
-          "Common Rust": "Обикновена ръжда",
-          "Northern Leaf Blight": "Северен листен пригор",
-          "Black Rot": "Черно гниене",
-          "Esca (Black Measles)": "Еска (черна мрежеста болест)",
-          "Leaf Blight (Isariopsis Leaf Spot)": "Листен пригор (петна от Isariopsis)",
-          "Bacterial Spot": "Бактериално петносване",
-          "Early Blight": "Ранен пригор",
+          "Cercospora_Leaf_Spot": "Петниста листна плесен",
+          "Common_Rust": "Обикновена ръжда",
+          "Northern_Leaf_Blight": "Северен листен пригор",
+          "Black_Rot": "Черно гниене",
+          "Esca_(Black_Measles)": "Еска (черна мрежеста болест)",
+          "Bacterial_spot": "Бактериално петносване",
+          "Early_blight": "Ранен пригор",
           "Late Blight": "Късен пригор",
-          "Leaf Mold": "Листна плесен",
-          "Septoria Leaf Spot": "Петносване от Септория",
-          "Spider Mites (Two-spotted Spider Mite)": "Паяжинообразни акари",
-          "Target Spot": "Целево петносване",
-          "Tomato Yellow Leaf Curl Virus": "Вирус на жълтата къдрава листна мозайка по доматите",
-          "Tomato Mosaic Virus": "Вирус на мозайката по доматите",
+          "Leaf_Mold": "Листна плесен",
+          "Septoria_Leaf_Spot": "Петносване от Септория",
+          "Spider_Mites_(Two-spotted_Spider_Mite)": "Паяжинообразни акари",
+          "Target_Spot": "Целево петносване",
+          "Tomato_Yellow Leaf Curl Virus": "Вирус на жълтата къдрава листна мозайка по доматите",
+          "Tomato_Mosaic Virus": "Вирус на мозайката по доматите",
           "Healthy": "Здраво",
           "_Cercospora Leaf Spot": "Петниста листна плесен",
           "_Common Rust": "Обикновена ръжда",
@@ -111,7 +116,25 @@
           "Tomato": "Домат",
           "No": "Няма"
         },
-        "supportedCrops": "Поддържани растителни видове"
+        "supportedCrops": "Поддържани растителни видове",
+        "encountered": "Засичано",
+        "yes": "Да",
+        "no": "Не"
+    },
+    "modals": {
+      "crops": "Култури",
+      "diseased_plants": "Болни растения",
+      "no_diseased_plants": "Не са открити болни растения.",
+      "measurement": "Измерване",
+      "field": "Насаждение",
+      "recent_plants": "Скорошни растения",
+      "no_data": "Няма налични данни."
+    },
+    "alert": {
+      "confirm": "Потвърдете изтриването",
+      "you_sure": "Сигурни ли сте, че искате да изтриете обекта?",
+      "cancel": "Отказ",
+      "yes": "Да"
     }
   }
   

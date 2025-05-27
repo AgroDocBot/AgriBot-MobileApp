@@ -14,14 +14,15 @@ export const AppStats = () => {
   const { language } = useSelector((state: RootState) => state.settings);
   const { user } = useSelector((state: RootState) => state.auth); // Assuming user object contains id and username
 
-  const [fieldCoverage, setFieldCoverage] = useState([{ x: "Explored", y: 0 }, { x: "Unexplored", y: 1 }]);
-  const [measurementRates, setMeasurementRates] = useState([{ x: "Success", y: 0 }, { x: "Failed", y: 1 }]);
-  const [loading, setLoading] = useState(true);
-  const [measurementDurations, setMeasurementDurations] = useState<{ x: string; y: number }[]>([]);
-
   if (language === 'English') i18n.locale = 'en';
   else if (language === 'Български') i18n.locale = 'bg';
   else i18n.locale = 'de';
+
+  const [fieldCoverage, setFieldCoverage] = useState([{ x: i18n.t("stats.explored"), y: 0 }, { x: i18n.t("stats.unexplored"), y: 1 }]);
+  const [measurementRates, setMeasurementRates] = useState([{ x: i18n.t("stats.success"), y: 0 }, { x: i18n.t("stats.failed"), y: 1 }]);
+  const [loading, setLoading] = useState(true);
+  const [measurementDurations, setMeasurementDurations] = useState<{ x: string; y: number }[]>([]);
+
 
   useEffect(() => {
     const fetchStats = async () => {

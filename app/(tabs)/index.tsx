@@ -75,24 +75,51 @@ export default function HomeScreen() {
 
   // Function used for both login and register
   const handleSubmit = async () => {
+    if (!username.trim()) {
+      Alert.alert('Validation Error', 'Username is required.');
+      return;
+    }
+  
+    if (isSignup) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        Alert.alert('Validation Error', 'Please enter a valid email address.');
+        return;
+      }
+  
+      const passwordRegex = /^(?=.*\d).{8,}$/;
+      if (!passwordRegex.test(password)) {
+        Alert.alert('Validation Error', 'Password must be at least 8 characters long and contain at least one digit.');
+        return;
+      }
+    }
+  
     setLoading(true);
     const url = isSignup
       ? 'https://agribot-backend-abck.onrender.com/auth/register'
       : 'https://agribot-backend-abck.onrender.com/auth/login';
-
+  
     const body = isSignup
       ? { username, email, password }
       : { username, password };
-
+  
     try {
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://agribot-backend-abck.onrender.com'
-      },
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*', // usually not needed client-side
+        },
         body: JSON.stringify(body),
       });
-      const data = await response.json();
-
+  
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        data = { message: 'Unknown error occurred' };
+      }
+  
       if (response.ok) {
         if (isSignup) {
           setLoading(false);
@@ -101,23 +128,26 @@ export default function HomeScreen() {
         } else {
           setLoading(false);
           Alert.alert('Success', 'Logged in successfully!');
-
           await AsyncStorage.setItem('authToken', data.accessToken);
           await AsyncStorage.setItem('user', JSON.stringify(data.user));
-
           setIsLogged(true);
-
           dispatch(setAuthState({ token: data.accessToken, user: data.user }));
         }
       } else {
-        Alert.alert('Error', data.message || 'Something went wrong.');
+        setLoading(false);
+        if (response.status === 500) {
+          Alert.alert('Error', 'User with these credentials already exists.');
+        } else {
+          Alert.alert('Error', data.message || 'Something went wrong.');
+        }
       }
     } catch (error) {
-      console.error(error);
+      console.error('Network or server error:', error);
       Alert.alert('Error', 'Unable to connect to the server.');
       setLoading(false);
     }
   };
+  
 
   // Conditional rendering depending on the presence of authenticated user and loading state
   if(user) return (<Home></Home>)

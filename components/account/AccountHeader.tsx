@@ -2,10 +2,16 @@ import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
+import i18n from '@/translations/i18n';
 
 export const AccountHeader = ({ userPhoto }: { userPhoto?: string }) => {
 
+  const { language } = useSelector((state: RootState) => state.settings);
   const user = useSelector((state: RootState) => state.auth.user);
+
+  if (language === 'English') i18n.locale = 'en';
+  else if (language === 'Български') i18n.locale = 'bg';
+  else i18n.locale = 'de';
 
   // Displays username and avatar
   return (
@@ -13,7 +19,7 @@ export const AccountHeader = ({ userPhoto }: { userPhoto?: string }) => {
       <Image source={ require('../../assets/images/account_profile_user_avatar_icon_219236.png') } style={styles.avatar} />
       <View style={styles.titleContainer}>
         <Text style={styles.userName}>{user ? user.username : "Name Surname"}</Text>
-        <Text style={styles.userRole}>{user ? "User" : "Guest"}</Text>
+        <Text style={styles.userRole}>{user ? i18n.t("personal.user") : i18n.t("personal.guest")}</Text>
       </View>
     </View>
   );

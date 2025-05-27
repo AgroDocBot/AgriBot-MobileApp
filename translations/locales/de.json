@@ -13,7 +13,11 @@
       "appStats": "App Statistik",
       "hours": "Dauer des Robotsteuers (Stunden)",
       "fieldCoverage": "Feldbedeckung",
-      "measurementRates": "Erfolgsrate der Messungen"
+      "measurementRates": "Erfolgsrate der Messungen",
+      "explored": "Entdeckte Flächen",
+      "unexplored": "Unentdeckte",
+      "success": "Gesunde",
+      "failed": "Kranke"
     },
     "personal": {
       "personalSettings": "Personaleinstellungen",
@@ -21,7 +25,9 @@
       "logout": "Abmeldung",
       "newPassword": "Neues Passwort",
       "confirmNewPassword": "Neues Passwort bestätigen",
-      "updatePassword": "Password verändern"
+      "updatePassword": "Password verändern",
+      "user": "Benutzer",
+      "guest": "Gast"
     },
     "measurements": {
       "date": "Datum",
@@ -93,6 +99,20 @@
         "Strawberry": "Erdbeere",
         "Tomato": "Tomate"
       },
-      "supportedCrops": "Pflanzarten"
+      "supportedCrops": "Pflanzarten",
+      "encountered": "Begegnet",
+      "yes": "Ja",
+      "no": "Nein"
+    }, 
+    "modals": {
+      "crops": "Feldfruchten",
+      "diseased_plants": "Kranke",
+      "no_diseased_plants": "Keine kranke Pflanzen.",
+      "measurement": "Messung",
+      "field": "Feld",
+      "recent_plants": "Letzte Pflanzen",
+      "no_data": "Keine Daten verfügbar."
     }
   }
+
+  

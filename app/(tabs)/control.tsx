@@ -1,6 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, Image, Platform } from 'react-native';
-
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -12,6 +11,8 @@ import RobotControl from '@/components/control/Controller';
 import { Dimensions } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
+import { useColorScheme } from 'react-native';
+import { Colors } from '@/constants/Colors';
 
 export default function TabControl() {
 

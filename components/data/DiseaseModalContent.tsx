@@ -2,10 +2,21 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { DiseaseType } from '@/constants/types/DiseaseInterfaces';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import i18n from '@/translations/i18n';
 
 export default function DiseaseModalContent({ disease }: { disease: DiseaseType }) {
 
-  const tags: Array<string> = disease.affectedParts?.split(',');
+  const tags: Array<string> = disease?.affectedParts?.split(',');
+
+  const { language, controlStyle, unitsSystem } = useSelector((state: RootState) => state.settings);
+
+  if(language === 'English') i18n.locale = 'en';
+  else if(language === 'Български') i18n.locale = 'bg';
+  else i18n.locale = 'de';
+
+  console.log(language)
 
   return (
     <View style={styles.diseaseContainer}>
@@ -23,7 +34,7 @@ export default function DiseaseModalContent({ disease }: { disease: DiseaseType 
 
       {/* Affected Parts */}
       <View style={styles.tagsContainer}>
-        {tags.map((tag, index) => (
+        {tags?.map((tag, index) => (
           <View key={index} style={styles.tag}>
             <MaterialCommunityIcons name="virus-outline" size={16} color="#4caf50" />
             <Text style={styles.tagText}>{tag}</Text>
